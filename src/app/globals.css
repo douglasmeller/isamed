@@ -1,26 +1,85 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --color-white: #ffffff;
+  --color-cloud: #fffafc;
+
+  --color-pink-100: #fdeef4;
+  --color-pink-200: #fbdfec;
+  --color-pink-300: #f6c3da;
+  --color-pink-400: #ef9dc0;
+  --color-pink-500: #e37ea8;
+  --color-pink-600: #cf5f8d;
+  --color-pink-700: #ac4670;
+
+  --color-ink: #4a3540;
+  --color-ink-soft: #8a7480;
+
+  --radius-lg: 1.25rem;
+  --radius-xl: 1.75rem;
+  --radius-2xl: 2.25rem;
+
+  --font-rounded: var(--font-quicksand);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-white: var(--color-white);
+  --color-cloud: var(--color-cloud);
+  --color-pink-100: var(--color-pink-100);
+  --color-pink-200: var(--color-pink-200);
+  --color-pink-300: var(--color-pink-300);
+  --color-pink-400: var(--color-pink-400);
+  --color-pink-500: var(--color-pink-500);
+  --color-pink-600: var(--color-pink-600);
+  --color-pink-700: var(--color-pink-700);
+  --color-ink: var(--color-ink);
+  --color-ink-soft: var(--color-ink-soft);
+
+  --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
+  --radius-2xl: var(--radius-2xl);
+
+  --font-sans: var(--font-rounded);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  height: 100%;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  min-height: 100%;
+  background: var(--color-cloud);
+  color: var(--color-ink);
+  font-family: var(--font-rounded), ui-rounded, "Segoe UI", sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-pink-300);
+  color: var(--color-ink);
+}
+
+input,
+button {
+  font-family: inherit;
+}
+
+/* Scrollbar styling to keep the soft aesthetic */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-pink-300);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-pink-400);
 }
