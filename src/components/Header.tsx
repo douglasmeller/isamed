@@ -7,10 +7,10 @@ export function Header() {
     <header className="flex items-center justify-between px-5 py-5 sm:px-8 md:justify-end">
       <div className="flex items-center gap-2.5 md:hidden">
         <Image
-          src="/IsaMed_SomenteSimbolos.png"
+          src="/IsaMed_SomenteSimbolos.webp"
           alt="IsaMed"
-          width={1254}
-          height={1254}
+          width={256}
+          height={256}
           priority
           className="h-9 w-9 rounded-xl"
         />

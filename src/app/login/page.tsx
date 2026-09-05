@@ -13,10 +13,10 @@ export default function LoginPage() {
     <main className="flex flex-1 items-center justify-center bg-gradient-to-b from-pink-100 via-cloud to-white px-6 py-12">
       <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-[0_20px_60px_-15px_rgba(228,140,175,0.45)] sm:p-10">
         <Image
-          src="/IsaMed_SimboloTexto.png"
+          src="/IsaMed_SimboloTexto.webp"
           alt="IsaMed"
-          width={1254}
-          height={1254}
+          width={256}
+          height={256}
           priority
           className="mx-auto mb-6 h-32 w-32"
         />

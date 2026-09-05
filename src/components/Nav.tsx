@@ -51,8 +51,8 @@ export function Nav() {
         <Image
           src="/IsaMed_SomenteTexto.png"
           alt="IsaMed"
-          width={2053}
-          height={766}
+          width={300}
+          height={112}
           priority
           className="mb-6 h-8 w-auto px-2"
         />
