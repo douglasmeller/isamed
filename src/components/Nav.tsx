@@ -48,13 +48,14 @@ export function Nav() {
 
       {/* Desktop: left rail */}
       <nav className="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col gap-1 border-r border-pink-200/70 bg-white/80 p-4 pt-8 backdrop-blur md:flex">
+        {/* self-start impede que o flex-col da sidebar estique a largura da imagem */}
         <Image
           src="/IsaMed_SomenteTexto.png"
           alt="IsaMed"
-          width={300}
-          height={112}
+          width={240}
+          height={90}
           priority
-          className="mb-6 h-8 w-auto px-2"
+          className="mb-6 ml-2 h-8 w-auto self-start"
         />
         {items.map((item) => {
           const active = pathname === item.href;
