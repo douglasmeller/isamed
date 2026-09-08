@@ -7,3 +7,14 @@ export type Task = {
   done: boolean;
   created_at: string;
 };
+
+export type EntryKind = "exam" | "note";
+
+export type Entry = {
+  id: string;
+  user_id: string;
+  kind: EntryKind;
+  title: string;
+  date: string; // YYYY-MM-DD
+  created_at: string;
+};

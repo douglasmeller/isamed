@@ -3,12 +3,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, ListChecks } from "lucide-react";
+import { CalendarDays, GraduationCap, ListChecks, NotebookPen } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const items = [
   { href: "/", label: "Hoje", icon: ListChecks },
   { href: "/calendario", label: "Calendário", icon: CalendarDays },
+  { href: "/provas", label: "Provas", icon: GraduationCap },
+  { href: "/anotacoes", label: "Anotações", icon: NotebookPen },
 ];
 
 export function Nav() {
@@ -17,8 +19,8 @@ export function Nav() {
   return (
     <>
       {/* Mobile: bottom tab bar */}
-      <nav className="fixed inset-x-0 bottom-0 z-20 flex justify-center border-t border-pink-200/70 bg-white/90 px-4 pb-[env(safe-area-inset-bottom)] backdrop-blur md:hidden">
-        <div className="flex w-full max-w-sm items-stretch justify-around py-2">
+      <nav className="fixed inset-x-0 bottom-0 z-20 flex justify-center border-t border-pink-200/50 bg-white/90 px-2 pb-[env(safe-area-inset-bottom)] shadow-bar backdrop-blur md:hidden">
+        <div className="flex w-full max-w-md items-stretch justify-around py-2">
           {items.map((item) => {
             const active = pathname === item.href;
             const Icon = item.icon;
@@ -27,19 +29,21 @@ export function Nav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-1 rounded-2xl py-1.5 transition-colors",
+                  "flex flex-1 flex-col items-center gap-1 rounded-2xl px-0.5 py-1.5 transition-colors",
                   active ? "text-pink-600" : "text-ink-soft hover:text-pink-500",
                 )}
               >
                 <span
                   className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-xl transition-colors",
-                    active && "bg-pink-100",
+                    "flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-200",
+                    active && "bg-pink-100 shadow-soft",
                   )}
                 >
-                  <Icon className="h-5 w-5" strokeWidth={2.25} />
+                  <Icon className="h-4.5 w-4.5" strokeWidth={2.25} />
                 </span>
-                <span className="text-xs font-medium">{item.label}</span>
+                <span className="text-center text-[10px] font-medium leading-tight">
+                  {item.label}
+                </span>
               </Link>
             );
           })}
@@ -47,7 +51,7 @@ export function Nav() {
       </nav>
 
       {/* Desktop: left rail */}
-      <nav className="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col gap-1 border-r border-pink-200/70 bg-white/80 p-4 pt-8 backdrop-blur md:flex">
+      <nav className="fixed inset-y-0 left-0 z-20 hidden w-56 flex-col gap-1 border-r border-pink-200/50 bg-white/80 p-4 pt-8 shadow-panel backdrop-blur md:flex">
         {/* self-start impede que o flex-col da sidebar estique a largura da imagem */}
         <Image
           src="/IsaMed_SomenteTexto.png"
@@ -65,8 +69,10 @@ export function Nav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-2xl px-4 py-3 font-medium transition-colors",
-                active ? "bg-pink-200 text-pink-700" : "text-ink-soft hover:bg-pink-100 hover:text-pink-600",
+                "flex items-center gap-3 rounded-2xl px-4 py-3 font-medium transition-all duration-200",
+                active
+                  ? "bg-pink-200 text-pink-700 shadow-soft"
+                  : "text-ink-soft hover:bg-pink-100 hover:text-pink-600",
               )}
             >
               <Icon className="h-5 w-5" strokeWidth={2.25} />

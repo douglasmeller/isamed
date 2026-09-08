@@ -8,17 +8,19 @@ import { formatDayMonth, formatMonthYear, formatWeekday, toISODate } from "@/lib
 import { cn } from "@/lib/cn";
 import { AddTaskForm } from "@/components/AddTaskForm";
 import { TaskList } from "@/components/TaskList";
-import type { Task } from "@/lib/types";
+import type { Entry, Task } from "@/lib/types";
 
 export function MonthCalendar({
   year,
   month,
   tasks,
+  entries,
   todayISO,
 }: {
   year: number;
   month: number;
   tasks: Task[];
+  entries: Entry[];
   todayISO: string;
 }) {
   const days = getMonthGrid(year, month);
@@ -37,13 +39,20 @@ export function MonthCalendar({
     tasksByDate.set(task.date, list);
   }
 
+  const entriesByDate = new Map<string, Entry[]>();
+  for (const entry of entries) {
+    const list = entriesByDate.get(entry.date) ?? [];
+    list.push(entry);
+    entriesByDate.set(entry.date, list);
+  }
+
   const prevMonth = new Date(year, month - 1, 1);
   const nextMonth = new Date(year, month + 1, 1);
   const selectedDate = new Date(`${selected}T00:00:00`);
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-2xl border-2 border-pink-100 bg-white p-4 sm:p-6">
+      <div className="rounded-2xl border border-pink-100/80 bg-white p-4 shadow-lift sm:p-6">
         <div className="mb-4 flex items-center justify-between">
           <h1 className="text-xl font-semibold text-ink">{formatMonthYear(monthDate)}</h1>
           <div className="flex gap-1">
@@ -82,21 +91,25 @@ export function MonthCalendar({
             const hasPending = dayTasks.some((t) => !t.done);
             const hasDone = dayTasks.some((t) => t.done);
 
+            const dayEntries = entriesByDate.get(iso) ?? [];
+            const hasExam = dayEntries.some((e) => e.kind === "exam");
+            const hasNote = dayEntries.some((e) => e.kind === "note");
+
             return (
               <button
                 key={iso}
                 type="button"
                 onClick={() => setSelected(iso)}
                 className={cn(
-                  "flex aspect-square flex-col items-center justify-center gap-1 rounded-xl text-sm font-medium transition-colors",
+                  "flex aspect-square flex-col items-center justify-center gap-1 rounded-xl text-sm font-medium transition-all duration-200",
                   !inMonth && "text-ink-soft/40",
-                  inMonth && !isSelected && "text-ink hover:bg-pink-100",
-                  isSelected && "bg-pink-500 text-white",
+                  inMonth && !isSelected && "text-ink hover:bg-pink-100 hover:shadow-soft",
+                  isSelected && "bg-pink-500 text-white shadow-lift",
                   isToday && !isSelected && "ring-2 ring-pink-400 ring-inset",
                 )}
               >
                 {day.getDate()}
-                <span className="flex h-1.5 gap-0.5">
+                <span className="flex h-1.5 flex-wrap justify-center gap-0.5">
                   {hasPending && (
                     <span
                       className={cn(
@@ -110,6 +123,22 @@ export function MonthCalendar({
                       className={cn(
                         "h-1.5 w-1.5 rounded-full",
                         isSelected ? "bg-white/60" : "bg-pink-300",
+                      )}
+                    />
+                  )}
+                  {hasExam && (
+                    <span
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        isSelected ? "bg-white" : "bg-purple-500",
+                      )}
+                    />
+                  )}
+                  {hasNote && (
+                    <span
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        isSelected ? "bg-white/80" : "bg-rose-800",
                       )}
                     />
                   )}
