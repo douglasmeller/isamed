@@ -11,7 +11,7 @@ export default function LoginPage() {
 
   return (
     <main className="flex flex-1 items-center justify-center bg-gradient-to-b from-pink-100 via-cloud to-white px-6 py-12">
-      <div className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-[0_20px_60px_-15px_rgba(228,140,175,0.45)] sm:p-10">
+      <div className="w-full max-w-sm rounded-2xl border border-pink-100/60 bg-white p-8 shadow-float sm:p-10">
         <Image
           src="/IsaMed_SimboloTexto.webp"
           alt="IsaMed"
@@ -32,7 +32,7 @@ export default function LoginPage() {
               autoComplete="current-password"
               inputMode="numeric"
               placeholder="Senha"
-              className="w-full rounded-2xl border-2 border-pink-200 bg-cloud px-5 py-3.5 pr-12 text-center text-lg tracking-widest text-ink outline-none transition-colors placeholder:tracking-normal placeholder:text-ink-soft focus:border-pink-400"
+              className="w-full rounded-2xl border border-pink-200/80 bg-cloud px-5 py-3.5 pr-12 text-center text-lg tracking-widest text-ink shadow-soft outline-none transition-all placeholder:tracking-normal placeholder:text-ink-soft focus:border-pink-300 focus:shadow-lift"
             />
             <button
               type="button"
@@ -52,7 +52,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={pending}
-            className="mt-2 rounded-2xl bg-pink-500 py-3.5 text-lg font-semibold text-white shadow-lg shadow-pink-300/50 transition-all hover:bg-pink-600 hover:shadow-pink-400/50 active:scale-[0.98] disabled:opacity-60"
+            className="mt-2 rounded-2xl bg-pink-500 py-3.5 text-lg font-semibold text-white shadow-lift transition-all hover:-translate-y-px hover:bg-pink-600 hover:shadow-float active:translate-y-0 active:scale-[0.98] disabled:opacity-60"
           >
             {pending ? "Entrando..." : "Entrar"}
           </button>

@@ -32,6 +32,17 @@ export async function toggleTask(id: string, done: boolean) {
   revalidatePath("/calendario");
 }
 
+export async function updateTask(id: string, input: { title: string; time: string | null }) {
+  const title = input.title.trim();
+  if (!title) return;
+
+  const supabase = await createClient();
+  await supabase.from("tasks").update({ title, time: input.time }).eq("id", id);
+
+  revalidatePath("/");
+  revalidatePath("/calendario");
+}
+
 export async function moveTask(id: string, date: string) {
   // Espera uma data no formato YYYY-MM-DD.
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return;
