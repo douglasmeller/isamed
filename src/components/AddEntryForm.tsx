@@ -22,6 +22,7 @@ export function AddEntryForm({
   date?: string;
 }) {
   const [title, setTitle] = useState("");
+  const [time, setTime] = useState("");
   const [pickedDate, setPickedDate] = useState(() => date ?? toISODate(new Date()));
   const [, startTransition] = useTransition();
   const titleRef = useAutoGrowTextarea(title);
@@ -34,10 +35,11 @@ export function AddEntryForm({
     if (!trimmed || !effectiveDate) return;
 
     startTransition(() => {
-      createEntry(kind, { title: trimmed, date: effectiveDate });
+      createEntry(kind, { title: trimmed, date: effectiveDate, time: time || null });
     });
 
     setTitle("");
+    setTime("");
     titleRef.current?.focus();
   };
 
@@ -60,6 +62,15 @@ export function AddEntryForm({
           !date && "basis-full sm:basis-0",
         )}
       />
+      {kind === "exam" && (
+        <input
+          type="time"
+          value={time}
+          onChange={(e) => setTime(e.target.value)}
+          aria-label="Horário (opcional)"
+          className="w-[6.5rem] shrink-0 rounded-2xl border border-pink-200/80 bg-white px-2 py-3 text-center text-sm text-ink shadow-soft outline-none transition-all focus:border-pink-300 focus:shadow-lift"
+        />
+      )}
       {!date && (
         <DatePicker value={pickedDate} onChange={setPickedDate} className="w-[9.5rem] shrink-0" />
       )}

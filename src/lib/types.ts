@@ -16,6 +16,7 @@ export type Entry = {
   kind: EntryKind;
   title: string;
   date: string; // YYYY-MM-DD
+  time: string | null; // HH:MM:SS
   created_at: string;
 };
 

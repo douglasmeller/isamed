@@ -32,9 +32,11 @@ export function EntryItem({
 
   const [title, setTitle] = useState(entry.title);
   const [date, setDate] = useState(entry.date);
+  const [time, setTime] = useState(entry.time?.slice(0, 5) ?? "");
 
   const [draftTitle, setDraftTitle] = useState(entry.title);
   const [draftDate, setDraftDate] = useState(entry.date);
+  const [draftTime, setDraftTime] = useState(entry.time?.slice(0, 5) ?? "");
   const draftTitleRef = useAutoGrowTextarea(draftTitle);
 
   const [, startTransition] = useTransition();
@@ -59,6 +61,7 @@ export function EntryItem({
   const startEditing = () => {
     setDraftTitle(title);
     setDraftDate(date);
+    setDraftTime(time);
     setEditing(true);
   };
 
@@ -70,10 +73,11 @@ export function EntryItem({
 
     setTitle(trimmed);
     setDate(draftDate);
+    setTime(draftTime);
     setEditing(false);
 
     startTransition(() => {
-      updateEntry(entry.id, { title: trimmed, date: draftDate });
+      updateEntry(entry.id, { title: trimmed, date: draftDate, time: draftTime || null });
     });
   };
 
@@ -146,6 +150,16 @@ export function EntryItem({
               className="min-w-0 flex-1 basis-full resize-none overflow-hidden rounded-xl border-2 border-pink-300 bg-white px-3 py-2 text-ink outline-none transition-colors focus:border-pink-400 sm:basis-0"
             />
             <DatePicker value={draftDate} onChange={setDraftDate} className="w-[9.5rem] shrink-0" />
+            {entry.kind === "exam" && (
+              <input
+                type="time"
+                value={draftTime}
+                onChange={(e) => setDraftTime(e.target.value)}
+                onKeyDown={(e) => e.key === "Escape" && cancelEditing()}
+                aria-label="Horário (opcional)"
+                className="w-[6.5rem] shrink-0 rounded-xl border-2 border-pink-200 bg-white px-2 py-2 text-center text-sm text-ink outline-none transition-colors focus:border-pink-400"
+              />
+            )}
             <button
               type="submit"
               disabled={!draftTitle.trim() || !draftDate}
@@ -167,6 +181,12 @@ export function EntryItem({
           </form>
         ) : (
           <>
+            {time && (
+              <span className="shrink-0 rounded-full bg-pink-100 px-2.5 py-1 text-xs font-semibold text-pink-600">
+                {time}
+              </span>
+            )}
+
             <button
               type="button"
               onClick={startEditing}

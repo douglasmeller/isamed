@@ -11,7 +11,10 @@ function revalidateEntries() {
   revalidatePath("/tarefas-estudos");
 }
 
-export async function createEntry(kind: EntryKind, input: { title: string; date: string }) {
+export async function createEntry(
+  kind: EntryKind,
+  input: { title: string; date: string; time?: string | null },
+) {
   const title = input.title.trim();
   if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(input.date)) return;
 
@@ -25,18 +28,25 @@ export async function createEntry(kind: EntryKind, input: { title: string; date:
     kind,
     title,
     date: input.date,
+    time: input.time ?? null,
     user_id: user.id,
   });
 
   revalidateEntries();
 }
 
-export async function updateEntry(id: string, input: { title: string; date: string }) {
+export async function updateEntry(
+  id: string,
+  input: { title: string; date: string; time?: string | null },
+) {
   const title = input.title.trim();
   if (!title || !/^\d{4}-\d{2}-\d{2}$/.test(input.date)) return;
 
   const supabase = await createClient();
-  await supabase.from("entries").update({ title, date: input.date }).eq("id", id);
+  await supabase
+    .from("entries")
+    .update({ title, date: input.date, time: input.time ?? null })
+    .eq("id", id);
 
   revalidateEntries();
 }
