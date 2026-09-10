@@ -34,3 +34,15 @@ export function formatMonthYear(date: Date): string {
 export function isSameISODate(a: Date, b: string): boolean {
   return toISODate(a) === b;
 }
+
+// Curtinho (dd/MM), usado em etiquetas de vinculo com item de outro dia.
+export function formatShortDate(date: Date): string {
+  return format(date, "dd/MM");
+}
+
+// Diferenca em dias de "from" pra "to" (positivo = "to" no futuro).
+export function diffDays(fromISO: string, toISO: string): number {
+  const from = new Date(`${fromISO}T00:00:00`);
+  const to = new Date(`${toISO}T00:00:00`);
+  return Math.round((to.getTime() - from.getTime()) / 86400000);
+}

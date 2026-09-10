@@ -25,7 +25,9 @@ export default async function CalendarioPage({ searchParams }: PageProps<"/calen
   const [{ data: tasksData }, { data: entriesData }, { data: linksData }] = await Promise.all([
     supabase.from("tasks").select("*").gte("date", rangeStart).lte("date", rangeEnd),
     supabase.from("entries").select("*").gte("date", rangeStart).lte("date", rangeEnd),
-    supabase.from("item_links").select("*").gte("date", rangeStart).lte("date", rangeEnd),
+    // Vinculo pode ser com item de outro dia/mes, entao busca todos (poucos
+    // registros, escala pessoal) em vez de filtrar pelo mes exibido.
+    supabase.from("item_links").select("*"),
   ]);
 
   return (

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { AddTaskForm } from "@/components/AddTaskForm";
 import { TaskList } from "@/components/TaskList";
+import { FocusHighlight } from "@/components/FocusHighlight";
 import {
   addDays,
   formatDayMonth,
@@ -21,6 +22,7 @@ export default async function TarefasEstudosPage({
   const daysParam = typeof params.days === "string" ? parseInt(params.days, 10) : NaN;
   const upcomingDays =
     Number.isFinite(daysParam) && daysParam > 0 ? daysParam : DEFAULT_UPCOMING_DAYS;
+  const focusParam = typeof params.focus === "string" ? params.focus : undefined;
 
   const today = startOfToday();
   const rangeStart = toISODate(today);
@@ -30,7 +32,9 @@ export default async function TarefasEstudosPage({
   const [{ data: tasksData }, { data: entriesData }, { data: linksData }] = await Promise.all([
     supabase.from("tasks").select("*").gte("date", rangeStart).lte("date", rangeEnd),
     supabase.from("entries").select("*").gte("date", rangeStart).lte("date", rangeEnd),
-    supabase.from("item_links").select("*").gte("date", rangeStart).lte("date", rangeEnd),
+    // Vinculo pode ser com item de outro dia, entao busca todos (poucos
+    // registros, escala pessoal) em vez de filtrar pela janela exibida.
+    supabase.from("item_links").select("*"),
   ]);
 
   const tasks = (tasksData ?? []) as Task[];
@@ -42,6 +46,8 @@ export default async function TarefasEstudosPage({
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-10 pt-2">
+      <FocusHighlight focus={focusParam} />
+
       <header>
         <h1 className="text-2xl font-semibold text-ink">Tarefas/Estudos</h1>
         <p className="text-sm text-ink-soft">Organize suas tarefas e estudos do dia a dia.</p>

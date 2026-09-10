@@ -7,6 +7,7 @@ import { cn } from "@/lib/cn";
 import { toggleTask, deleteTask, moveTask, updateTask } from "@/app/actions/tasks";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
+import { formatShortDate, toISODate } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
 import { linkedItemsFor, linkTargetHref } from "@/lib/links";
 import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
@@ -20,7 +21,7 @@ export function TaskItem({
 }: {
   task: Task;
   // Quando presentes, a tarefa ganha o botao de vincular a outras
-  // tarefas/provas/anotacoes do mesmo dia (filtrado por data aqui dentro).
+  // tarefas/provas/anotacoes (do mesmo dia ou de qualquer outro).
   allTasks?: Task[];
   allEntries?: Entry[];
   allLinks?: ItemLink[];
@@ -101,21 +102,29 @@ export function TaskItem({
   const hoverReveal =
     "[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100";
 
-  const self = { type: "task" as const, id: task.id };
+  const self: DayItem = { type: "task", id: task.id, title, date: task.date };
 
-  const dayItems: DayItem[] | undefined =
+  const initialDayItems: DayItem[] | undefined =
     allTasks && allEntries
       ? [
           ...allTasks
             .filter((t) => t.date === task.date)
-            .map((t) => ({ type: "task" as const, id: t.id, title: t.title })),
+            .map((t): DayItem => ({ type: "task", id: t.id, title: t.title, date: t.date })),
           ...allEntries
             .filter((e) => e.date === task.date)
-            .map((e) => ({ type: "entry" as const, id: e.id, title: e.title, kind: e.kind })),
+            .map(
+              (e): DayItem => ({
+                type: "entry",
+                id: e.id,
+                title: e.title,
+                date: e.date,
+                kind: e.kind,
+              }),
+            ),
         ]
       : undefined;
-  const dayLinks = allLinks?.filter((l) => l.date === task.date);
-  const linked = dayItems && dayLinks ? linkedItemsFor(self, dayItems, dayLinks) : [];
+  const linked = allLinks ? linkedItemsFor(self, allLinks) : [];
+  const today = toISODate(new Date());
 
   return (
     <div
@@ -255,12 +264,11 @@ export function TaskItem({
                   <CalendarSync className="h-4 w-4" />
                 </button>
 
-                {dayItems && dayLinks && (
+                {initialDayItems && allLinks && (
                   <LinkPicker
                     self={self}
-                    date={task.date}
-                    dayItems={dayItems}
-                    links={dayLinks}
+                    initialDayItems={initialDayItems}
+                    allLinks={allLinks}
                     triggerClassName={cn(actionButton, hoverReveal)}
                   />
                 )}
@@ -282,16 +290,21 @@ export function TaskItem({
 
       {linked.length > 0 && (
         <div className="flex flex-wrap gap-1 pl-9">
-          {linked.map((item) => (
-            <Link
-              key={`${item.type}-${item.id}`}
-              href={linkTargetHref(task.date, item)}
-              title="Ir para o item vinculado"
-              className="truncate rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-medium text-pink-600 transition-colors hover:bg-pink-200"
-            >
-              {item.title}
-            </Link>
-          ))}
+          {linked.map((item) => {
+            const sameDay = item.date === task.date;
+            return (
+              <Link
+                key={`${item.type}-${item.id}`}
+                href={linkTargetHref(item, today)}
+                title="Ir para o item vinculado"
+                className="truncate rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-medium text-pink-600 transition-colors hover:bg-pink-200"
+              >
+                {sameDay
+                  ? item.title
+                  : `${item.title} (${formatShortDate(new Date(`${item.date}T00:00:00`))})`}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>

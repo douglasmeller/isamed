@@ -7,7 +7,7 @@ import { cn } from "@/lib/cn";
 import { deleteEntry, moveEntry, updateEntry } from "@/app/actions/entries";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
-import { formatDayMonth, formatWeekday } from "@/lib/dates";
+import { formatDayMonth, formatShortDate, formatWeekday, toISODate } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
 import { linkedItemsFor, linkTargetHref } from "@/lib/links";
 import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
@@ -21,9 +21,7 @@ export function EntryItem({
 }: {
   entry: Entry;
   // Quando presentes, o item ganha o botao de vincular a outras
-  // tarefas/provas/anotacoes do mesmo dia (filtrado por data aqui dentro,
-  // entao funciona tanto numa lista de um dia so quanto numa lista com
-  // datas variadas, como as telas de Provas e Anotações).
+  // tarefas/provas/anotacoes (do mesmo dia ou de qualquer outro).
   allTasks?: Task[];
   allEntries?: Entry[];
   allLinks?: ItemLink[];
@@ -90,21 +88,29 @@ export function EntryItem({
     "[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100";
 
   const dateObj = new Date(`${date}T00:00:00`);
-  const self = { type: "entry" as const, id: entry.id };
+  const self: DayItem = { type: "entry", id: entry.id, title, date, kind: entry.kind };
 
-  const dayItems: DayItem[] | undefined =
+  const initialDayItems: DayItem[] | undefined =
     allTasks && allEntries
       ? [
           ...allTasks
             .filter((t) => t.date === date)
-            .map((t) => ({ type: "task" as const, id: t.id, title: t.title })),
+            .map((t): DayItem => ({ type: "task", id: t.id, title: t.title, date: t.date })),
           ...allEntries
             .filter((e) => e.date === date)
-            .map((e) => ({ type: "entry" as const, id: e.id, title: e.title, kind: e.kind })),
+            .map(
+              (e): DayItem => ({
+                type: "entry",
+                id: e.id,
+                title: e.title,
+                date: e.date,
+                kind: e.kind,
+              }),
+            ),
         ]
       : undefined;
-  const dayLinks = allLinks?.filter((l) => l.date === date);
-  const linked = dayItems && dayLinks ? linkedItemsFor(self, dayItems, dayLinks) : [];
+  const linked = allLinks ? linkedItemsFor(self, allLinks) : [];
+  const today = toISODate(new Date());
 
   return (
     <div
@@ -206,12 +212,11 @@ export function EntryItem({
                   <CalendarSync className="h-4 w-4" />
                 </button>
 
-                {dayItems && dayLinks && (
+                {initialDayItems && allLinks && (
                   <LinkPicker
                     self={self}
-                    date={date}
-                    dayItems={dayItems}
-                    links={dayLinks}
+                    initialDayItems={initialDayItems}
+                    allLinks={allLinks}
                     triggerClassName={cn(actionButton, hoverReveal)}
                   />
                 )}
@@ -233,16 +238,21 @@ export function EntryItem({
 
       {linked.length > 0 && (
         <div className="flex flex-wrap gap-1 pl-0.5">
-          {linked.map((item) => (
-            <Link
-              key={`${item.type}-${item.id}`}
-              href={linkTargetHref(date, item)}
-              title="Ir para o item vinculado"
-              className="truncate rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-medium text-pink-600 transition-colors hover:bg-pink-200"
-            >
-              {item.title}
-            </Link>
-          ))}
+          {linked.map((item) => {
+            const sameDay = item.date === date;
+            return (
+              <Link
+                key={`${item.type}-${item.id}`}
+                href={linkTargetHref(item, today)}
+                title="Ir para o item vinculado"
+                className="truncate rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-medium text-pink-600 transition-colors hover:bg-pink-200"
+              >
+                {sameDay
+                  ? item.title
+                  : `${item.title} (${formatShortDate(new Date(`${item.date}T00:00:00`))})`}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>
