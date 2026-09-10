@@ -3,13 +3,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, GraduationCap, ListChecks, NotebookPen } from "lucide-react";
+import { CalendarDays, FileQuestion, ListChecks, NotebookPen } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const items = [
   { href: "/", label: "Tarefas/Estudos", icon: ListChecks },
   { href: "/calendario", label: "Calendário", icon: CalendarDays },
-  { href: "/provas", label: "Provas", icon: GraduationCap },
+  { href: "/provas", label: "Provas", icon: FileQuestion },
   { href: "/anotacoes", label: "Anotações", icon: NotebookPen },
 ];
 

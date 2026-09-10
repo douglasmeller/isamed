@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useTransition } from "react";
 import { createPortal } from "react-dom";
-import { Check, GraduationCap, Link2, ListChecks, NotebookPen } from "lucide-react";
+import { Check, FileQuestion, Link2, ListChecks, NotebookPen } from "lucide-react";
 import { linkItems, unlinkItems } from "@/app/actions/links";
 import { cn } from "@/lib/cn";
 import { areLinked } from "@/lib/links";
@@ -12,7 +12,7 @@ import type { DayItem, ItemLink } from "@/lib/types";
 // item ao vincular (tarefa, prova ou anotacao).
 function ItemIcon({ item }: { item: DayItem }) {
   if (item.type === "task") return <ListChecks className="h-3.5 w-3.5 shrink-0" />;
-  if (item.kind === "exam") return <GraduationCap className="h-3.5 w-3.5 shrink-0" />;
+  if (item.kind === "exam") return <FileQuestion className="h-3.5 w-3.5 shrink-0" />;
   return <NotebookPen className="h-3.5 w-3.5 shrink-0" />;
 }
 
