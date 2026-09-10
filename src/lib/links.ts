@@ -13,3 +13,9 @@ export function areLinked(a: ItemRef, b: ItemRef, links: ItemLink[]): boolean {
 export function linkedItemsFor(self: ItemRef, dayItems: DayItem[], links: ItemLink[]): DayItem[] {
   return dayItems.filter((d) => !(d.type === self.type && d.id === self.id) && areLinked(self, d, links));
 }
+
+// Leva pro Calendario ja no dia certo, com o item vinculado destacado --
+// e o unico lugar que mostra tarefas/provas/anotacoes juntas num so dia.
+export function linkTargetHref(date: string, item: ItemRef): string {
+  return `/calendario?month=${date.slice(0, 7)}&day=${date}&focus=${item.type}-${item.id}`;
+}

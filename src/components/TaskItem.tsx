@@ -1,13 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { CalendarSync, Check, Pencil, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { toggleTask, deleteTask, moveTask, updateTask } from "@/app/actions/tasks";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
 import { isSubmitEnter } from "@/lib/keyboard";
-import { linkedItemsFor } from "@/lib/links";
+import { linkedItemsFor, linkTargetHref } from "@/lib/links";
 import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
 import type { DayItem, Entry, ItemLink, Task } from "@/lib/types";
 
@@ -118,6 +119,7 @@ export function TaskItem({
 
   return (
     <div
+      id={`item-task-${task.id}`}
       className={cn(
         "group flex flex-col gap-1.5 rounded-2xl border border-pink-100/80 bg-white px-3 py-3 shadow-soft transition-all duration-200 sm:px-4",
         // Tarefa pendente ganha relevo ao passar o mouse; concluida fica
@@ -281,12 +283,14 @@ export function TaskItem({
       {linked.length > 0 && (
         <div className="flex flex-wrap gap-1 pl-9">
           {linked.map((item) => (
-            <span
+            <Link
               key={`${item.type}-${item.id}`}
-              className="truncate rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-medium text-pink-600"
+              href={linkTargetHref(task.date, item)}
+              title="Ir para o item vinculado"
+              className="truncate rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-medium text-pink-600 transition-colors hover:bg-pink-200"
             >
               {item.title}
-            </span>
+            </Link>
           ))}
         </div>
       )}

@@ -20,5 +20,5 @@ export async function signIn(_prevState: string | null, formData: FormData) {
     return "Senha incorreta. Tenta de novo!";
   }
 
-  redirect("/");
+  redirect("/calendario");
 }

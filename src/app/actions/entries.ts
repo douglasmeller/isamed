@@ -8,6 +8,7 @@ function revalidateEntries() {
   revalidatePath("/provas");
   revalidatePath("/anotacoes");
   revalidatePath("/calendario");
+  revalidatePath("/tarefas-estudos");
 }
 
 export async function createEntry(kind: EntryKind, input: { title: string; date: string }) {

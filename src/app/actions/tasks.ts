@@ -20,7 +20,7 @@ export async function createTask(input: { title: string; date: string; time: str
     user_id: user.id,
   });
 
-  revalidatePath("/");
+  revalidatePath("/tarefas-estudos");
   revalidatePath("/calendario");
 }
 
@@ -28,7 +28,7 @@ export async function toggleTask(id: string, done: boolean) {
   const supabase = await createClient();
   await supabase.from("tasks").update({ done }).eq("id", id);
 
-  revalidatePath("/");
+  revalidatePath("/tarefas-estudos");
   revalidatePath("/calendario");
 }
 
@@ -39,7 +39,7 @@ export async function updateTask(id: string, input: { title: string; time: strin
   const supabase = await createClient();
   await supabase.from("tasks").update({ title, time: input.time }).eq("id", id);
 
-  revalidatePath("/");
+  revalidatePath("/tarefas-estudos");
   revalidatePath("/calendario");
 }
 
@@ -53,7 +53,7 @@ export async function moveTask(id: string, date: string) {
   // vinculo anterior deixa de valer.
   await supabase.from("item_links").delete().or(`and(a_type.eq.task,a_id.eq.${id}),and(b_type.eq.task,b_id.eq.${id})`);
 
-  revalidatePath("/");
+  revalidatePath("/tarefas-estudos");
   revalidatePath("/calendario");
 }
 
@@ -63,6 +63,6 @@ export async function deleteTask(id: string) {
   // Sem isso, o vinculo ficaria orfao apontando pra uma tarefa que nao existe mais.
   await supabase.from("item_links").delete().or(`and(a_type.eq.task,a_id.eq.${id}),and(b_type.eq.task,b_id.eq.${id})`);
 
-  revalidatePath("/");
+  revalidatePath("/tarefas-estudos");
   revalidatePath("/calendario");
 }

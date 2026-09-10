@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { AddEntryForm } from "@/components/AddEntryForm";
-import { EntryList } from "@/components/EntryList";
+import { AddTaskForm } from "@/components/AddTaskForm";
+import { TaskList } from "@/components/TaskList";
 import {
   addDays,
   formatDayMonth,
@@ -14,7 +14,9 @@ import type { Entry, ItemLink, Task } from "@/lib/types";
 const DEFAULT_UPCOMING_DAYS = 6;
 const MORE_DAYS_STEP = 6;
 
-export default async function AnotacoesPage({ searchParams }: PageProps<"/anotacoes">) {
+export default async function TarefasEstudosPage({
+  searchParams,
+}: PageProps<"/tarefas-estudos">) {
   const params = await searchParams;
   const daysParam = typeof params.days === "string" ? parseInt(params.days, 10) : NaN;
   const upcomingDays =
@@ -34,15 +36,15 @@ export default async function AnotacoesPage({ searchParams }: PageProps<"/anotac
   const tasks = (tasksData ?? []) as Task[];
   const entries = (entriesData ?? []) as Entry[];
   const links = (linksData ?? []) as ItemLink[];
-  const notesByDate = (iso: string) => entries.filter((e) => e.kind === "note" && e.date === iso);
+  const byDate = (iso: string) => tasks.filter((t) => t.date === iso);
 
   const upcoming = Array.from({ length: upcomingDays }, (_, i) => addDays(today, i + 1));
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-10 pt-2">
       <header>
-        <h1 className="text-2xl font-semibold text-ink">Anotações</h1>
-        <p className="text-sm text-ink-soft">Suas observações da agenda, com data.</p>
+        <h1 className="text-2xl font-semibold text-ink">Tarefas/Estudos</h1>
+        <p className="text-sm text-ink-soft">Organize suas tarefas e estudos do dia a dia.</p>
       </header>
 
       <section>
@@ -54,10 +56,9 @@ export default async function AnotacoesPage({ searchParams }: PageProps<"/anotac
         </header>
 
         <div className="flex flex-col gap-4">
-          <AddEntryForm kind="note" placeholder="Nova anotação..." date={rangeStart} />
-          <EntryList
-            entries={notesByDate(rangeStart)}
-            emptyLabel="Nenhuma anotação nesse dia."
+          <AddTaskForm date={rangeStart} />
+          <TaskList
+            tasks={byDate(rangeStart)}
             allTasks={tasks}
             allEntries={entries}
             allLinks={links}
@@ -70,16 +71,16 @@ export default async function AnotacoesPage({ searchParams }: PageProps<"/anotac
         <div className="flex flex-col gap-6">
           {upcoming.map((date) => {
             const iso = toISODate(date);
+            const dayTasks = byDate(iso);
             return (
               <div key={iso}>
                 <p className="mb-2 text-sm font-semibold text-ink-soft">
                   {formatWeekday(date)}, {formatDayMonth(date)}
                 </p>
                 <div className="flex flex-col gap-3">
-                  <AddEntryForm kind="note" placeholder="Nova anotação..." date={iso} />
-                  <EntryList
-                    entries={notesByDate(iso)}
-                    emptyLabel="Nenhuma anotação nesse dia."
+                  <AddTaskForm date={iso} />
+                  <TaskList
+                    tasks={dayTasks}
                     allTasks={tasks}
                     allEntries={entries}
                     allLinks={links}
@@ -92,7 +93,7 @@ export default async function AnotacoesPage({ searchParams }: PageProps<"/anotac
 
         <div className="mt-6 flex justify-center">
           <Link
-            href={`/anotacoes?days=${upcomingDays + MORE_DAYS_STEP}`}
+            href={`/tarefas-estudos?days=${upcomingDays + MORE_DAYS_STEP}`}
             className="rounded-2xl border border-pink-200/80 bg-white px-5 py-2.5 text-sm font-semibold text-pink-600 shadow-soft transition-all hover:-translate-y-px hover:bg-pink-50 hover:shadow-lift active:translate-y-0"
           >
             Ver mais dias

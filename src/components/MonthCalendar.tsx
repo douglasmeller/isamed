@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getMonthGrid, WEEKDAY_LABELS } from "@/lib/calendarGrid";
 import { formatDayMonth, formatMonthYear, formatWeekday, toISODate } from "@/lib/dates";
@@ -19,6 +19,8 @@ export function MonthCalendar({
   entries,
   links,
   todayISO,
+  initialSelected,
+  initialFocus,
 }: {
   year: number;
   month: number;
@@ -26,6 +28,10 @@ export function MonthCalendar({
   entries: Entry[];
   links: ItemLink[];
   todayISO: string;
+  // Vem de ?day= e ?focus= quando se chega aqui pelo link de um item
+  // vinculado, pra abrir direto no dia certo e destacar o item.
+  initialSelected?: string;
+  initialFocus?: string;
 }) {
   const days = getMonthGrid(year, month);
   const monthDate = new Date(year, month, 1);
@@ -33,8 +39,22 @@ export function MonthCalendar({
   const currentMonthISO = todayISO.slice(0, 7);
   const gridMonthISO = `${year}-${String(month + 1).padStart(2, "0")}`;
   const [selected, setSelected] = useState<string>(
-    gridMonthISO === currentMonthISO ? todayISO : toISODate(monthDate),
+    initialSelected ?? (gridMonthISO === currentMonthISO ? todayISO : toISODate(monthDate)),
   );
+
+  // Rola ate o item vinculado e da um destaque rapido, so na primeira
+  // renderizacao (chegando aqui por um link de "vincular").
+  useEffect(() => {
+    if (!initialFocus) return;
+    const el = document.getElementById(`item-${initialFocus}`);
+    if (!el) return;
+
+    el.scrollIntoView({ behavior: "smooth", block: "center" });
+    el.classList.add("ring-2", "ring-pink-400");
+    const timeout = setTimeout(() => el.classList.remove("ring-2", "ring-pink-400"), 1800);
+    return () => clearTimeout(timeout);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const tasksByDate = new Map<string, Task[]>();
   for (const task of tasks) {
@@ -63,7 +83,7 @@ export function MonthCalendar({
     <div className="flex flex-col gap-6">
       <div className="rounded-2xl border border-pink-100/80 bg-white p-4 shadow-lift sm:p-6">
         <div className="mb-4 flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-ink">{formatMonthYear(monthDate)}</h1>
+          <h2 className="text-xl font-semibold text-ink">{formatMonthYear(monthDate)}</h2>
           <div className="flex gap-1">
             <Link
               href={`/calendario?month=${toISODate(prevMonth).slice(0, 7)}`}

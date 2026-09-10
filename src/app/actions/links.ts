@@ -14,7 +14,7 @@ function normalize(a: ItemRef, b: ItemRef): [ItemRef, ItemRef] {
 }
 
 function revalidateLinked() {
-  revalidatePath("/");
+  revalidatePath("/tarefas-estudos");
   revalidatePath("/calendario");
   revalidatePath("/provas");
   revalidatePath("/anotacoes");

@@ -7,6 +7,8 @@ import type { Entry, ItemLink, Task } from "@/lib/types";
 export default async function CalendarioPage({ searchParams }: PageProps<"/calendario">) {
   const params = await searchParams;
   const monthParam = typeof params.month === "string" ? params.month : undefined;
+  const dayParam = typeof params.day === "string" ? params.day : undefined;
+  const focusParam = typeof params.focus === "string" ? params.focus : undefined;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -27,7 +29,12 @@ export default async function CalendarioPage({ searchParams }: PageProps<"/calen
   ]);
 
   return (
-    <div className="mx-auto w-full max-w-2xl pt-2">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 pt-2">
+      <header>
+        <h1 className="text-2xl font-semibold text-ink">Calendário</h1>
+        <p className="text-sm text-ink-soft">Organize seus dias, provas e anotações num só lugar.</p>
+      </header>
+
       <MonthCalendar
         year={year}
         month={month - 1}
@@ -35,6 +42,8 @@ export default async function CalendarioPage({ searchParams }: PageProps<"/calen
         entries={(entriesData ?? []) as Entry[]}
         links={(linksData ?? []) as ItemLink[]}
         todayISO={toISODate(today)}
+        initialSelected={dayParam}
+        initialFocus={focusParam}
       />
     </div>
   );

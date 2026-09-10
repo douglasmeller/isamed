@@ -37,7 +37,7 @@ export async function proxy(request: NextRequest) {
   }
 
   if (user && isPublicPath) {
-    return NextResponse.redirect(new URL("/", request.url));
+    return NextResponse.redirect(new URL("/calendario", request.url));
   }
 
   return response;

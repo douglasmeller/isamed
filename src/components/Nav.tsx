@@ -7,8 +7,8 @@ import { CalendarDays, FileQuestion, ListChecks, NotebookPen } from "lucide-reac
 import { cn } from "@/lib/cn";
 
 const items = [
-  { href: "/", label: "Tarefas/Estudos", icon: ListChecks },
   { href: "/calendario", label: "Calendário", icon: CalendarDays },
+  { href: "/tarefas-estudos", label: "Tarefas/Estudos", icon: ListChecks },
   { href: "/provas", label: "Provas", icon: FileQuestion },
   { href: "/anotacoes", label: "Anotações", icon: NotebookPen },
 ];

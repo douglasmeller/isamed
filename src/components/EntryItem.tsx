@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import Link from "next/link";
 import { CalendarSync, Check, Pencil, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { deleteEntry, moveEntry, updateEntry } from "@/app/actions/entries";
@@ -8,7 +9,7 @@ import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
 import { formatDayMonth, formatWeekday } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
-import { linkedItemsFor } from "@/lib/links";
+import { linkedItemsFor, linkTargetHref } from "@/lib/links";
 import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
 import type { DayItem, Entry, ItemLink, Task } from "@/lib/types";
 
@@ -106,7 +107,10 @@ export function EntryItem({
   const linked = dayItems && dayLinks ? linkedItemsFor(self, dayItems, dayLinks) : [];
 
   return (
-    <div className="group flex flex-col gap-1.5 rounded-2xl border border-pink-100/80 bg-white px-3 py-3 shadow-soft transition-all duration-200 hover:-translate-y-px hover:border-pink-200 hover:shadow-lift sm:px-4">
+    <div
+      id={`item-entry-${entry.id}`}
+      className="group flex flex-col gap-1.5 rounded-2xl border border-pink-100/80 bg-white px-3 py-3 shadow-soft transition-all duration-200 hover:-translate-y-px hover:border-pink-200 hover:shadow-lift sm:px-4"
+    >
       <div className="flex items-center gap-2 sm:gap-3">
         {editing ? (
           <form
@@ -230,12 +234,14 @@ export function EntryItem({
       {linked.length > 0 && (
         <div className="flex flex-wrap gap-1 pl-0.5">
           {linked.map((item) => (
-            <span
+            <Link
               key={`${item.type}-${item.id}`}
-              className="truncate rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-medium text-pink-600"
+              href={linkTargetHref(date, item)}
+              title="Ir para o item vinculado"
+              className="truncate rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-medium text-pink-600 transition-colors hover:bg-pink-200"
             >
               {item.title}
-            </span>
+            </Link>
           ))}
         </div>
       )}
