@@ -1,17 +1,19 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Plus } from "lucide-react";
 import { createTask } from "@/app/actions/tasks";
+import { isSubmitEnter } from "@/lib/keyboard";
+import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
 
 export function AddTaskForm({ date }: { date: string }) {
   const [title, setTitle] = useState("");
   const [time, setTime] = useState("");
   const [, startTransition] = useTransition();
-  const titleRef = useRef<HTMLInputElement>(null);
+  const titleRef = useAutoGrowTextarea(title);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
     const trimmed = title.trim();
     if (!trimmed) return;
 
@@ -26,13 +28,19 @@ export function AddTaskForm({ date }: { date: string }) {
 
   return (
     <form onSubmit={handleSubmit} className="flex items-center gap-2">
-      <input
+      <textarea
         ref={titleRef}
-        type="text"
+        rows={1}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        onKeyDown={(e) => {
+          if (isSubmitEnter(e)) {
+            e.preventDefault();
+            handleSubmit();
+          }
+        }}
         placeholder="Nova tarefa..."
-        className="min-w-0 flex-1 rounded-2xl border border-pink-200/80 bg-white px-4 py-3 text-ink shadow-soft outline-none transition-all placeholder:text-ink-soft focus:border-pink-300 focus:shadow-lift"
+        className="min-w-0 flex-1 resize-none overflow-hidden rounded-2xl border border-pink-200/80 bg-white px-4 py-3 text-ink shadow-soft outline-none transition-all placeholder:text-ink-soft focus:border-pink-300 focus:shadow-lift"
       />
       <input
         type="time"

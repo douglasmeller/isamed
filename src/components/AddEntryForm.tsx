@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { Plus } from "lucide-react";
 import { createEntry } from "@/app/actions/entries";
 import { DatePicker } from "@/components/DatePicker";
 import { cn } from "@/lib/cn";
 import { toISODate } from "@/lib/dates";
+import { isSubmitEnter } from "@/lib/keyboard";
+import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
 import type { EntryKind } from "@/lib/types";
 
 export function AddEntryForm({
@@ -22,12 +24,12 @@ export function AddEntryForm({
   const [title, setTitle] = useState("");
   const [pickedDate, setPickedDate] = useState(() => date ?? toISODate(new Date()));
   const [, startTransition] = useTransition();
-  const titleRef = useRef<HTMLInputElement>(null);
+  const titleRef = useAutoGrowTextarea(title);
 
   const effectiveDate = date ?? pickedDate;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = (e?: React.FormEvent) => {
+    e?.preventDefault();
     const trimmed = title.trim();
     if (!trimmed || !effectiveDate) return;
 
@@ -41,14 +43,20 @@ export function AddEntryForm({
 
   return (
     <form onSubmit={handleSubmit} className="flex flex-wrap items-center gap-2">
-      <input
+      <textarea
         ref={titleRef}
-        type="text"
+        rows={1}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
+        onKeyDown={(e) => {
+          if (isSubmitEnter(e)) {
+            e.preventDefault();
+            handleSubmit();
+          }
+        }}
         placeholder={placeholder}
         className={cn(
-          "min-w-0 flex-1 rounded-2xl border border-pink-200/80 bg-white px-4 py-3 text-ink shadow-soft outline-none transition-all placeholder:text-ink-soft focus:border-pink-300 focus:shadow-lift",
+          "min-w-0 flex-1 resize-none overflow-hidden rounded-2xl border border-pink-200/80 bg-white px-4 py-3 text-ink shadow-soft outline-none transition-all placeholder:text-ink-soft focus:border-pink-300 focus:shadow-lift",
           !date && "basis-full sm:basis-0",
         )}
       />

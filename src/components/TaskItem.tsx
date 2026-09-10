@@ -6,7 +6,9 @@ import { cn } from "@/lib/cn";
 import { toggleTask, deleteTask, moveTask, updateTask } from "@/app/actions/tasks";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
+import { isSubmitEnter } from "@/lib/keyboard";
 import { linkedItemsFor } from "@/lib/links";
+import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
 import type { DayItem, Entry, ItemLink, Task } from "@/lib/types";
 
 export function TaskItem({
@@ -35,6 +37,7 @@ export function TaskItem({
   // Rascunho da edicao, para poder cancelar sem perder o valor original.
   const [draftTitle, setDraftTitle] = useState(task.title);
   const [draftTime, setDraftTime] = useState(task.time?.slice(0, 5) ?? "");
+  const draftTitleRef = useAutoGrowTextarea(draftTitle);
 
   const [, startTransition] = useTransition();
 
@@ -148,14 +151,24 @@ export function TaskItem({
             }}
             className="flex min-w-0 flex-1 flex-wrap items-center gap-2"
           >
-            <input
-              type="text"
+            <textarea
+              ref={draftTitleRef}
+              rows={1}
               value={draftTitle}
               onChange={(e) => setDraftTitle(e.target.value)}
-              onKeyDown={(e) => e.key === "Escape" && cancelEditing()}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  cancelEditing();
+                  return;
+                }
+                if (isSubmitEnter(e)) {
+                  e.preventDefault();
+                  saveEditing();
+                }
+              }}
               autoFocus
               aria-label="Nome da tarefa"
-              className="min-w-0 flex-1 basis-full rounded-xl border-2 border-pink-300 bg-white px-3 py-2 text-ink outline-none transition-colors focus:border-pink-400 sm:basis-0"
+              className="min-w-0 flex-1 basis-full resize-none overflow-hidden rounded-xl border-2 border-pink-300 bg-white px-3 py-2 text-ink outline-none transition-colors focus:border-pink-400 sm:basis-0"
             />
             <input
               type="time"

@@ -7,7 +7,9 @@ import { deleteEntry, moveEntry, updateEntry } from "@/app/actions/entries";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
 import { formatDayMonth, formatWeekday } from "@/lib/dates";
+import { isSubmitEnter } from "@/lib/keyboard";
 import { linkedItemsFor } from "@/lib/links";
+import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
 import type { DayItem, Entry, ItemLink, Task } from "@/lib/types";
 
 export function EntryItem({
@@ -34,6 +36,7 @@ export function EntryItem({
 
   const [draftTitle, setDraftTitle] = useState(entry.title);
   const [draftDate, setDraftDate] = useState(entry.date);
+  const draftTitleRef = useAutoGrowTextarea(draftTitle);
 
   const [, startTransition] = useTransition();
 
@@ -113,14 +116,24 @@ export function EntryItem({
             }}
             className="flex min-w-0 flex-1 flex-wrap items-center gap-2"
           >
-            <input
-              type="text"
+            <textarea
+              ref={draftTitleRef}
+              rows={1}
               value={draftTitle}
               onChange={(e) => setDraftTitle(e.target.value)}
-              onKeyDown={(e) => e.key === "Escape" && cancelEditing()}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  cancelEditing();
+                  return;
+                }
+                if (isSubmitEnter(e)) {
+                  e.preventDefault();
+                  saveEditing();
+                }
+              }}
               autoFocus
               aria-label="Título"
-              className="min-w-0 flex-1 basis-full rounded-xl border-2 border-pink-300 bg-white px-3 py-2 text-ink outline-none transition-colors focus:border-pink-400 sm:basis-0"
+              className="min-w-0 flex-1 basis-full resize-none overflow-hidden rounded-xl border-2 border-pink-300 bg-white px-3 py-2 text-ink outline-none transition-colors focus:border-pink-400 sm:basis-0"
             />
             <DatePicker value={draftDate} onChange={setDraftDate} className="w-[9.5rem] shrink-0" />
             <button

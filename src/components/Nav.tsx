@@ -7,7 +7,7 @@ import { CalendarDays, GraduationCap, ListChecks, NotebookPen } from "lucide-rea
 import { cn } from "@/lib/cn";
 
 const items = [
-  { href: "/", label: "Hoje", icon: ListChecks },
+  { href: "/", label: "Tarefas/Estudos", icon: ListChecks },
   { href: "/calendario", label: "Calendário", icon: CalendarDays },
   { href: "/provas", label: "Provas", icon: GraduationCap },
   { href: "/anotacoes", label: "Anotações", icon: NotebookPen },
