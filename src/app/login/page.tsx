@@ -10,7 +10,7 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
 
   return (
-    <main className="flex flex-1 items-center justify-center overflow-y-auto bg-gradient-to-b from-pink-100 via-cloud to-white px-6 py-12">
+    <main className="flex flex-1 items-center justify-center bg-gradient-to-b from-pink-100 via-cloud to-white px-6 py-12">
       <div className="w-full max-w-sm rounded-2xl border border-pink-100/60 bg-white p-8 shadow-float sm:p-10">
         <Image
           src="/IsaMed_SimboloTexto.webp"
