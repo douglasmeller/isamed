@@ -8,20 +8,22 @@ import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
 import { formatDayMonth, formatWeekday } from "@/lib/dates";
 import { linkedItemsFor } from "@/lib/links";
-import type { DayItem, Entry, ItemLink } from "@/lib/types";
+import type { DayItem, Entry, ItemLink, Task } from "@/lib/types";
 
 export function EntryItem({
   entry,
-  dayItems,
-  links,
-  onLinksChange,
+  allTasks,
+  allEntries,
+  allLinks,
 }: {
   entry: Entry;
-  // Presentes so quando renderizado dentro do painel do dia no calendario,
-  // onde da pra ver (e vincular a) as outras tarefas/provas/anotacoes do dia.
-  dayItems?: DayItem[];
-  links?: ItemLink[];
-  onLinksChange?: () => void;
+  // Quando presentes, o item ganha o botao de vincular a outras
+  // tarefas/provas/anotacoes do mesmo dia (filtrado por data aqui dentro,
+  // entao funciona tanto numa lista de um dia so quanto numa lista com
+  // datas variadas, como as telas de Provas e Anotações).
+  allTasks?: Task[];
+  allEntries?: Entry[];
+  allLinks?: ItemLink[];
 }) {
   const [removed, setRemoved] = useState(false);
   const [moving, setMoving] = useState(false);
@@ -76,7 +78,7 @@ export function EntryItem({
   if (removed) return null;
 
   const actionButton =
-    "shrink-0 rounded-xl p-1.5 text-ink-soft transition-colors hover:bg-pink-100 hover:text-pink-600";
+    "shrink-0 rounded-xl p-1.5 text-ink-soft shadow-soft transition-all hover:-translate-y-px hover:bg-pink-100 hover:text-pink-600 hover:shadow-lift active:translate-y-0";
 
   // Mesma lógica de revelar-no-hover das tarefas: só esconde em aparelhos com
   // mouse de verdade, para não sumir os botões em iPad/celular.
@@ -85,7 +87,20 @@ export function EntryItem({
 
   const dateObj = new Date(`${date}T00:00:00`);
   const self = { type: "entry" as const, id: entry.id };
-  const linked = dayItems && links ? linkedItemsFor(self, dayItems, links) : [];
+
+  const dayItems: DayItem[] | undefined =
+    allTasks && allEntries
+      ? [
+          ...allTasks
+            .filter((t) => t.date === date)
+            .map((t) => ({ type: "task" as const, id: t.id, title: t.title })),
+          ...allEntries
+            .filter((e) => e.date === date)
+            .map((e) => ({ type: "entry" as const, id: e.id, title: e.title, kind: e.kind })),
+        ]
+      : undefined;
+  const dayLinks = allLinks?.filter((l) => l.date === date);
+  const linked = dayItems && dayLinks ? linkedItemsFor(self, dayItems, dayLinks) : [];
 
   return (
     <div className="group flex flex-col gap-1.5 rounded-2xl border border-pink-100/80 bg-white px-3 py-3 shadow-soft transition-all duration-200 hover:-translate-y-px hover:border-pink-200 hover:shadow-lift sm:px-4">
@@ -113,7 +128,7 @@ export function EntryItem({
               disabled={!draftTitle.trim() || !draftDate}
               aria-label="Salvar"
               title="Salvar"
-              className="shrink-0 rounded-xl bg-pink-500 p-1.5 text-white shadow-soft transition-all hover:bg-pink-600 hover:shadow-lift disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+              className="shrink-0 rounded-xl bg-pink-500 p-1.5 text-white shadow-soft transition-all hover:-translate-y-px hover:bg-pink-600 hover:shadow-lift active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
             >
               <Check className="h-4 w-4" strokeWidth={2.5} />
             </button>
@@ -174,13 +189,12 @@ export function EntryItem({
                   <CalendarSync className="h-4 w-4" />
                 </button>
 
-                {dayItems && links && (
+                {dayItems && dayLinks && (
                   <LinkPicker
                     self={self}
                     date={date}
                     dayItems={dayItems}
-                    links={links}
-                    onChanged={onLinksChange}
+                    links={dayLinks}
                     triggerClassName={cn(actionButton, hoverReveal)}
                   />
                 )}

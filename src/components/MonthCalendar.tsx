@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getMonthGrid, WEEKDAY_LABELS } from "@/lib/calendarGrid";
 import { formatDayMonth, formatMonthYear, formatWeekday, toISODate } from "@/lib/dates";
@@ -10,20 +10,21 @@ import { AddTaskForm } from "@/components/AddTaskForm";
 import { TaskList } from "@/components/TaskList";
 import { AddEntryForm } from "@/components/AddEntryForm";
 import { EntryList } from "@/components/EntryList";
-import { getLinksForDate } from "@/app/actions/links";
-import type { DayItem, Entry, ItemLink, Task } from "@/lib/types";
+import type { Entry, ItemLink, Task } from "@/lib/types";
 
 export function MonthCalendar({
   year,
   month,
   tasks,
   entries,
+  links,
   todayISO,
 }: {
   year: number;
   month: number;
   tasks: Task[];
   entries: Entry[];
+  links: ItemLink[];
   todayISO: string;
 }) {
   const days = getMonthGrid(year, month);
@@ -34,26 +35,6 @@ export function MonthCalendar({
   const [selected, setSelected] = useState<string>(
     gridMonthISO === currentMonthISO ? todayISO : toISODate(monthDate),
   );
-
-  const [links, setLinks] = useState<ItemLink[]>([]);
-
-  // Os vinculos so fazem sentido dentro do dia aberto, entao buscamos de novo
-  // sempre que o dia selecionado muda (em vez de trazer tudo do mes inteiro).
-  useEffect(() => {
-    let cancelled = false;
-    getLinksForDate(selected).then((data) => {
-      if (!cancelled) setLinks(data);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [selected]);
-
-  // Vincular/desvincular muda o banco mas nao o retorno de getLinksForDate ja
-  // buscado; sem isso o item so mostraria o vinculo apos trocar de dia.
-  const refreshLinks = () => {
-    getLinksForDate(selected).then(setLinks);
-  };
 
   const tasksByDate = new Map<string, Task[]>();
   for (const task of tasks) {
@@ -78,13 +59,6 @@ export function MonthCalendar({
   const selectedExams = selectedEntries.filter((e) => e.kind === "exam");
   const selectedNotes = selectedEntries.filter((e) => e.kind === "note");
 
-  // Lista combinada do dia (tarefas + provas + anotacoes), usada pra oferecer
-  // as opcoes de vinculo em cada item.
-  const dayItems: DayItem[] = [
-    ...selectedTasks.map((t) => ({ type: "task" as const, id: t.id, title: t.title })),
-    ...selectedEntries.map((e) => ({ type: "entry" as const, id: e.id, title: e.title, kind: e.kind })),
-  ];
-
   return (
     <div className="flex flex-col gap-6">
       <div className="rounded-2xl border border-pink-100/80 bg-white p-4 shadow-lift sm:p-6">
@@ -93,14 +67,14 @@ export function MonthCalendar({
           <div className="flex gap-1">
             <Link
               href={`/calendario?month=${toISODate(prevMonth).slice(0, 7)}`}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-ink-soft transition-colors hover:bg-pink-100 hover:text-pink-600"
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-ink-soft shadow-soft transition-all hover:-translate-y-px hover:bg-pink-100 hover:text-pink-600 hover:shadow-lift active:translate-y-0"
               aria-label="Mês anterior"
             >
               <ChevronLeft className="h-5 w-5" />
             </Link>
             <Link
               href={`/calendario?month=${toISODate(nextMonth).slice(0, 7)}`}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-ink-soft transition-colors hover:bg-pink-100 hover:text-pink-600"
+              className="flex h-9 w-9 items-center justify-center rounded-xl text-ink-soft shadow-soft transition-all hover:-translate-y-px hover:bg-pink-100 hover:text-pink-600 hover:shadow-lift active:translate-y-0"
               aria-label="Próximo mês"
             >
               <ChevronRight className="h-5 w-5" />
@@ -211,12 +185,7 @@ export function MonthCalendar({
         <section className="flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-ink">Tarefas</h2>
           <AddTaskForm date={selected} />
-          <TaskList
-            tasks={selectedTasks}
-            dayItems={dayItems}
-            links={links}
-            onLinksChange={refreshLinks}
-          />
+          <TaskList tasks={selectedTasks} allTasks={tasks} allEntries={entries} allLinks={links} />
         </section>
 
         <section className="flex flex-col gap-3">
@@ -225,9 +194,9 @@ export function MonthCalendar({
           <EntryList
             entries={selectedExams}
             emptyLabel="Nenhuma prova nesse dia."
-            dayItems={dayItems}
-            links={links}
-            onLinksChange={refreshLinks}
+            allTasks={tasks}
+            allEntries={entries}
+            allLinks={links}
           />
         </section>
 
@@ -237,9 +206,9 @@ export function MonthCalendar({
           <EntryList
             entries={selectedNotes}
             emptyLabel="Nenhuma anotação nesse dia."
-            dayItems={dayItems}
-            links={links}
-            onLinksChange={refreshLinks}
+            allTasks={tasks}
+            allEntries={entries}
+            allLinks={links}
           />
         </section>
       </div>

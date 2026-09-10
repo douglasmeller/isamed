@@ -81,7 +81,7 @@ export function DatePicker({
       <button
         type="button"
         onClick={togglePicker}
-        className="flex w-full items-center justify-center gap-1.5 rounded-2xl border border-pink-200/80 bg-white px-3 py-2 text-center text-sm text-ink shadow-soft outline-none transition-all focus:border-pink-300 focus:shadow-lift"
+        className="flex w-full items-center justify-center gap-1.5 rounded-2xl border border-pink-200/80 bg-white px-3 py-2 text-center text-sm text-ink shadow-soft outline-none transition-all hover:-translate-y-px hover:shadow-lift focus:border-pink-300 focus:shadow-lift active:translate-y-0"
       >
         <CalendarDays className="h-4 w-4 shrink-0 text-pink-400" />
         <span className="truncate">
@@ -103,7 +103,7 @@ export function DatePicker({
                 type="button"
                 onClick={goPrevMonth}
                 aria-label="Mês anterior"
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-pink-100 hover:text-pink-600"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-ink-soft shadow-soft transition-all hover:bg-pink-100 hover:text-pink-600 hover:shadow-lift"
               >
                 <ChevronLeft className="h-4 w-4" />
               </button>
@@ -111,7 +111,7 @@ export function DatePicker({
                 type="button"
                 onClick={goNextMonth}
                 aria-label="Próximo mês"
-                className="flex h-7 w-7 items-center justify-center rounded-lg text-ink-soft transition-colors hover:bg-pink-100 hover:text-pink-600"
+                className="flex h-7 w-7 items-center justify-center rounded-lg text-ink-soft shadow-soft transition-all hover:bg-pink-100 hover:text-pink-600 hover:shadow-lift"
               >
                 <ChevronRight className="h-4 w-4" />
               </button>
@@ -137,10 +137,10 @@ export function DatePicker({
                   type="button"
                   onClick={() => pick(iso)}
                   className={cn(
-                    "flex aspect-square items-center justify-center rounded-lg text-xs font-medium transition-colors",
+                    "flex aspect-square items-center justify-center rounded-lg text-xs font-medium transition-all",
                     !inMonth && "text-ink-soft/40",
-                    inMonth && !isSelected && "text-ink hover:bg-pink-100",
-                    isSelected && "bg-pink-500 text-white",
+                    inMonth && !isSelected && "text-ink hover:bg-pink-100 hover:shadow-soft",
+                    isSelected && "bg-pink-500 text-white shadow-soft",
                   )}
                 >
                   {day.getDate()}

@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
-import type { DayItem, ItemLink } from "@/lib/types";
+import type { DayItem } from "@/lib/types";
 
 type ItemRef = Pick<DayItem, "type" | "id">;
 
@@ -55,10 +55,4 @@ export async function unlinkItems(a: ItemRef, b: ItemRef) {
     .match({ a_type: x.type, a_id: x.id, b_type: y.type, b_id: y.id });
 
   revalidateLinked();
-}
-
-export async function getLinksForDate(date: string): Promise<ItemLink[]> {
-  const supabase = await createClient();
-  const { data } = await supabase.from("item_links").select("*").eq("date", date);
-  return (data ?? []) as ItemLink[];
 }

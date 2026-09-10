@@ -20,10 +20,11 @@
   --radius-2xl: 2.25rem;
 
   /* Relevo em tom rosado (nao cinza), para a profundidade combinar com a
-     paleta e continuar suave. */
-  --shadow-soft: 0 1px 2px rgba(180, 100, 130, 0.05), 0 3px 10px rgba(180, 100, 130, 0.05);
-  --shadow-lift: 0 2px 6px rgba(180, 100, 130, 0.08), 0 10px 24px rgba(180, 100, 130, 0.1);
-  --shadow-float: 0 4px 10px rgba(180, 100, 130, 0.1), 0 18px 40px rgba(180, 100, 130, 0.12);
+     paleta e continuar suave. Valores um pouco mais fortes que o primeiro
+     ajuste para os botoes ficarem mais "levantados" sem perder a leveza. */
+  --shadow-soft: 0 1px 2px rgba(180, 100, 130, 0.07), 0 3px 10px rgba(180, 100, 130, 0.07);
+  --shadow-lift: 0 3px 8px rgba(180, 100, 130, 0.12), 0 12px 28px rgba(180, 100, 130, 0.14);
+  --shadow-float: 0 6px 14px rgba(180, 100, 130, 0.15), 0 22px 46px rgba(180, 100, 130, 0.18);
   --shadow-panel: 0 0 1px rgba(180, 100, 130, 0.08), 8px 0 28px rgba(180, 100, 130, 0.06);
   --shadow-bar: 0 -2px 10px rgba(180, 100, 130, 0.06);
 
@@ -80,6 +81,12 @@ body {
 input,
 button {
   font-family: inherit;
+}
+
+/* Todo botao clicavel mostra a mãozinha -- por padrao o navegador usa a
+   seta normal em <button>, diferente de links. */
+button:not(:disabled) {
+  cursor: pointer;
 }
 
 /* Scrollbar styling to keep the soft aesthetic */

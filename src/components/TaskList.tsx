@@ -1,16 +1,16 @@
 import { TaskItem } from "@/components/TaskItem";
-import type { DayItem, ItemLink, Task } from "@/lib/types";
+import type { Entry, ItemLink, Task } from "@/lib/types";
 
 export function TaskList({
   tasks,
-  dayItems,
-  links,
-  onLinksChange,
+  allTasks,
+  allEntries,
+  allLinks,
 }: {
   tasks: Task[];
-  dayItems?: DayItem[];
-  links?: ItemLink[];
-  onLinksChange?: () => void;
+  allTasks?: Task[];
+  allEntries?: Entry[];
+  allLinks?: ItemLink[];
 }) {
   if (tasks.length === 0) {
     return (
@@ -33,9 +33,9 @@ export function TaskList({
         <TaskItem
           key={task.id}
           task={task}
-          dayItems={dayItems}
-          links={links}
-          onLinksChange={onLinksChange}
+          allTasks={allTasks}
+          allEntries={allEntries}
+          allLinks={allLinks}
         />
       ))}
     </div>

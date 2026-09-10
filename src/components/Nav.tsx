@@ -29,14 +29,14 @@ export function Nav() {
                 key={item.href}
                 href={item.href}
                 className={cn(
-                  "flex flex-1 flex-col items-center gap-1 rounded-2xl px-0.5 py-1.5 transition-colors",
+                  "group flex flex-1 flex-col items-center gap-1 rounded-2xl px-0.5 py-1.5 transition-colors",
                   active ? "text-pink-600" : "text-ink-soft hover:text-pink-500",
                 )}
               >
                 <span
                   className={cn(
                     "flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-200",
-                    active && "bg-pink-100 shadow-soft",
+                    active ? "bg-pink-100 shadow-lift" : "group-hover:shadow-soft",
                   )}
                 >
                   <Icon className="h-4.5 w-4.5" strokeWidth={2.25} />
@@ -71,8 +71,8 @@ export function Nav() {
               className={cn(
                 "flex items-center gap-3 rounded-2xl px-4 py-3 font-medium transition-all duration-200",
                 active
-                  ? "bg-pink-200 text-pink-700 shadow-soft"
-                  : "text-ink-soft hover:bg-pink-100 hover:text-pink-600",
+                  ? "bg-pink-200 text-pink-700 shadow-lift"
+                  : "text-ink-soft hover:-translate-y-px hover:bg-pink-100 hover:text-pink-600 hover:shadow-soft",
               )}
             >
               <Icon className="h-5 w-5" strokeWidth={2.25} />

@@ -1,15 +1,17 @@
 import { createClient } from "@/lib/supabase/server";
 import { AddEntryForm } from "@/components/AddEntryForm";
 import { EntryList } from "@/components/EntryList";
-import type { Entry } from "@/lib/types";
+import type { Entry, ItemLink, Task } from "@/lib/types";
 
 export default async function AnotacoesPage() {
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("entries")
-    .select("*")
-    .eq("kind", "note")
-    .order("date", { ascending: true });
+  const [{ data: notesData }, { data: tasksData }, { data: entriesData }, { data: linksData }] =
+    await Promise.all([
+      supabase.from("entries").select("*").eq("kind", "note").order("date", { ascending: true }),
+      supabase.from("tasks").select("*"),
+      supabase.from("entries").select("*"),
+      supabase.from("item_links").select("*"),
+    ]);
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 pt-2">
@@ -19,7 +21,13 @@ export default async function AnotacoesPage() {
       </header>
 
       <AddEntryForm kind="note" placeholder="Nova anotação..." />
-      <EntryList entries={(data ?? []) as Entry[]} emptyLabel="Nenhuma anotação por aqui ainda." />
+      <EntryList
+        entries={(notesData ?? []) as Entry[]}
+        emptyLabel="Nenhuma anotação por aqui ainda."
+        allTasks={(tasksData ?? []) as Task[]}
+        allEntries={(entriesData ?? []) as Entry[]}
+        allLinks={(linksData ?? []) as ItemLink[]}
+      />
     </div>
   );
 }

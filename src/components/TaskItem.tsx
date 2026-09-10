@@ -7,20 +7,20 @@ import { toggleTask, deleteTask, moveTask, updateTask } from "@/app/actions/task
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
 import { linkedItemsFor } from "@/lib/links";
-import type { DayItem, ItemLink, Task } from "@/lib/types";
+import type { DayItem, Entry, ItemLink, Task } from "@/lib/types";
 
 export function TaskItem({
   task,
-  dayItems,
-  links,
-  onLinksChange,
+  allTasks,
+  allEntries,
+  allLinks,
 }: {
   task: Task;
-  // Presentes so quando renderizado dentro do painel do dia no calendario,
-  // onde da pra ver (e vincular a) as outras tarefas/provas/anotacoes do dia.
-  dayItems?: DayItem[];
-  links?: ItemLink[];
-  onLinksChange?: () => void;
+  // Quando presentes, a tarefa ganha o botao de vincular a outras
+  // tarefas/provas/anotacoes do mesmo dia (filtrado por data aqui dentro).
+  allTasks?: Task[];
+  allEntries?: Entry[];
+  allLinks?: ItemLink[];
 }) {
   const [optimisticDone, setOptimisticDone] = useState(task.done);
   const [removed, setRemoved] = useState(false);
@@ -88,7 +88,7 @@ export function TaskItem({
   if (removed) return null;
 
   const actionButton =
-    "shrink-0 rounded-xl p-1.5 text-ink-soft transition-colors hover:bg-pink-100 hover:text-pink-600";
+    "shrink-0 rounded-xl p-1.5 text-ink-soft shadow-soft transition-all hover:-translate-y-px hover:bg-pink-100 hover:text-pink-600 hover:shadow-lift active:translate-y-0";
 
   // Em aparelhos com mouse, os botoes so aparecem ao passar por cima (visual
   // mais limpo). Onde nao existe hover de verdade (iPad, celular), ficam
@@ -98,7 +98,20 @@ export function TaskItem({
     "[@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover:opacity-100 [@media(hover:hover)]:focus-visible:opacity-100";
 
   const self = { type: "task" as const, id: task.id };
-  const linked = dayItems && links ? linkedItemsFor(self, dayItems, links) : [];
+
+  const dayItems: DayItem[] | undefined =
+    allTasks && allEntries
+      ? [
+          ...allTasks
+            .filter((t) => t.date === task.date)
+            .map((t) => ({ type: "task" as const, id: t.id, title: t.title })),
+          ...allEntries
+            .filter((e) => e.date === task.date)
+            .map((e) => ({ type: "entry" as const, id: e.id, title: e.title, kind: e.kind })),
+        ]
+      : undefined;
+  const dayLinks = allLinks?.filter((l) => l.date === task.date);
+  const linked = dayItems && dayLinks ? linkedItemsFor(self, dayItems, dayLinks) : [];
 
   return (
     <div
@@ -118,10 +131,10 @@ export function TaskItem({
           aria-pressed={optimisticDone}
           aria-label={optimisticDone ? "Marcar como não feita" : "Marcar como feita"}
           className={cn(
-            "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 transition-all duration-200",
+            "flex h-7 w-7 shrink-0 items-center justify-center rounded-full border-2 shadow-soft transition-all duration-200 hover:-translate-y-px active:translate-y-0",
             optimisticDone
-              ? "border-pink-500 bg-pink-500 text-white shadow-soft"
-              : "border-pink-300 text-transparent hover:border-pink-500 hover:shadow-soft",
+              ? "border-pink-500 bg-pink-500 text-white shadow-lift"
+              : "border-pink-300 text-transparent hover:border-pink-500 hover:shadow-lift",
           )}
         >
           <Check className="h-4 w-4" strokeWidth={3} />
@@ -157,7 +170,7 @@ export function TaskItem({
               disabled={!draftTitle.trim()}
               aria-label="Salvar"
               title="Salvar"
-              className="shrink-0 rounded-xl bg-pink-500 p-1.5 text-white shadow-soft transition-all hover:bg-pink-600 hover:shadow-lift disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
+              className="shrink-0 rounded-xl bg-pink-500 p-1.5 text-white shadow-soft transition-all hover:-translate-y-px hover:bg-pink-600 hover:shadow-lift active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-none"
             >
               <Check className="h-4 w-4" strokeWidth={2.5} />
             </button>
@@ -227,13 +240,12 @@ export function TaskItem({
                   <CalendarSync className="h-4 w-4" />
                 </button>
 
-                {dayItems && links && (
+                {dayItems && dayLinks && (
                   <LinkPicker
                     self={self}
                     date={task.date}
                     dayItems={dayItems}
-                    links={links}
-                    onChanged={onLinksChange}
+                    links={dayLinks}
                     triggerClassName={cn(actionButton, hoverReveal)}
                   />
                 )}

@@ -37,7 +37,7 @@ export default function LoginPage() {
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
-              className="absolute inset-y-0 right-3 flex items-center text-ink-soft transition-colors hover:text-pink-600"
+              className="absolute inset-y-0 right-3 flex items-center text-ink-soft transition-colors hover:text-pink-600 active:scale-90"
               aria-label={showPassword ? "Esconder senha" : "Mostrar senha"}
               tabIndex={-1}
             >

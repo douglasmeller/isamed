@@ -20,7 +20,7 @@ export function Header() {
       <form action={signOut}>
         <button
           type="submit"
-          className="flex h-9 w-9 items-center justify-center rounded-xl text-ink-soft transition-colors hover:bg-pink-100 hover:text-pink-600"
+          className="flex h-9 w-9 items-center justify-center rounded-xl text-ink-soft shadow-soft transition-all hover:-translate-y-px hover:bg-pink-100 hover:text-pink-600 hover:shadow-lift active:translate-y-0"
           aria-label="Sair"
         >
           <LogOut className="h-5 w-5" />

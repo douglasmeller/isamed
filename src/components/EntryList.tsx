@@ -1,18 +1,18 @@
 import { EntryItem } from "@/components/EntryItem";
-import type { DayItem, Entry, ItemLink } from "@/lib/types";
+import type { Entry, ItemLink, Task } from "@/lib/types";
 
 export function EntryList({
   entries,
   emptyLabel,
-  dayItems,
-  links,
-  onLinksChange,
+  allTasks,
+  allEntries,
+  allLinks,
 }: {
   entries: Entry[];
   emptyLabel: string;
-  dayItems?: DayItem[];
-  links?: ItemLink[];
-  onLinksChange?: () => void;
+  allTasks?: Task[];
+  allEntries?: Entry[];
+  allLinks?: ItemLink[];
 }) {
   if (entries.length === 0) {
     return (
@@ -32,9 +32,9 @@ export function EntryList({
         <EntryItem
           key={entry.id}
           entry={entry}
-          dayItems={dayItems}
-          links={links}
-          onLinksChange={onLinksChange}
+          allTasks={allTasks}
+          allEntries={allEntries}
+          allLinks={allLinks}
         />
       ))}
     </div>

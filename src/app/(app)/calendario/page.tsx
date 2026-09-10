@@ -2,7 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { MonthCalendar } from "@/components/MonthCalendar";
 import { getMonthGrid } from "@/lib/calendarGrid";
 import { toISODate } from "@/lib/dates";
-import type { Entry, Task } from "@/lib/types";
+import type { Entry, ItemLink, Task } from "@/lib/types";
 
 export default async function CalendarioPage({ searchParams }: PageProps<"/calendario">) {
   const params = await searchParams;
@@ -20,9 +20,10 @@ export default async function CalendarioPage({ searchParams }: PageProps<"/calen
   const rangeEnd = toISODate(grid[grid.length - 1]);
 
   const supabase = await createClient();
-  const [{ data: tasksData }, { data: entriesData }] = await Promise.all([
+  const [{ data: tasksData }, { data: entriesData }, { data: linksData }] = await Promise.all([
     supabase.from("tasks").select("*").gte("date", rangeStart).lte("date", rangeEnd),
     supabase.from("entries").select("*").gte("date", rangeStart).lte("date", rangeEnd),
+    supabase.from("item_links").select("*").gte("date", rangeStart).lte("date", rangeEnd),
   ]);
 
   return (
@@ -32,6 +33,7 @@ export default async function CalendarioPage({ searchParams }: PageProps<"/calen
         month={month - 1}
         tasks={(tasksData ?? []) as Task[]}
         entries={(entriesData ?? []) as Entry[]}
+        links={(linksData ?? []) as ItemLink[]}
         todayISO={toISODate(today)}
       />
     </div>

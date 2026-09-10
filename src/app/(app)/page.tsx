@@ -8,7 +8,7 @@ import {
   startOfToday,
   toISODate,
 } from "@/lib/dates";
-import type { Task } from "@/lib/types";
+import type { Entry, ItemLink, Task } from "@/lib/types";
 
 const UPCOMING_DAYS = 6;
 
@@ -18,13 +18,15 @@ export default async function HomePage() {
   const rangeEnd = toISODate(addDays(today, UPCOMING_DAYS));
 
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("tasks")
-    .select("*")
-    .gte("date", rangeStart)
-    .lte("date", rangeEnd);
+  const [{ data: tasksData }, { data: entriesData }, { data: linksData }] = await Promise.all([
+    supabase.from("tasks").select("*").gte("date", rangeStart).lte("date", rangeEnd),
+    supabase.from("entries").select("*").gte("date", rangeStart).lte("date", rangeEnd),
+    supabase.from("item_links").select("*").gte("date", rangeStart).lte("date", rangeEnd),
+  ]);
 
-  const tasks = (data ?? []) as Task[];
+  const tasks = (tasksData ?? []) as Task[];
+  const entries = (entriesData ?? []) as Entry[];
+  const links = (linksData ?? []) as ItemLink[];
   const byDate = (iso: string) => tasks.filter((t) => t.date === iso);
 
   const upcoming = Array.from({ length: UPCOMING_DAYS }, (_, i) => addDays(today, i + 1));
@@ -41,7 +43,7 @@ export default async function HomePage() {
 
         <div className="flex flex-col gap-4">
           <AddTaskForm date={rangeStart} />
-          <TaskList tasks={byDate(rangeStart)} />
+          <TaskList tasks={byDate(rangeStart)} allTasks={tasks} allEntries={entries} allLinks={links} />
         </div>
       </section>
 
@@ -58,7 +60,12 @@ export default async function HomePage() {
                 </p>
                 <div className="flex flex-col gap-3">
                   <AddTaskForm date={iso} />
-                  <TaskList tasks={dayTasks} />
+                  <TaskList
+                    tasks={dayTasks}
+                    allTasks={tasks}
+                    allEntries={entries}
+                    allLinks={links}
+                  />
                 </div>
               </div>
             );

@@ -14,17 +14,12 @@ export function LinkPicker({
   date,
   dayItems,
   links,
-  onChanged,
   triggerClassName,
 }: {
   self: Pick<DayItem, "type" | "id">;
   date: string;
   dayItems: DayItem[];
   links: ItemLink[];
-  // Vinculos ficam num estado a parte no calendario (nao vem do
-  // revalidatePath), entao quem usa este componente precisa recarrega-los
-  // depois de uma mudanca.
-  onChanged?: () => void;
   triggerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
@@ -45,8 +40,8 @@ export function LinkPicker({
   const toggle = (other: DayItem) => {
     const linked = isLinked(other);
     startTransition(() => {
-      const promise = linked ? unlinkItems(self, other) : linkItems(date, self, other);
-      promise.then(() => onChanged?.());
+      if (linked) unlinkItems(self, other);
+      else linkItems(date, self, other);
     });
   };
 
