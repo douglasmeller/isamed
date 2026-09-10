@@ -8,7 +8,6 @@ import { deleteEntry, moveEntry, updateEntry } from "@/app/actions/entries";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
-import { TimePicker } from "@/components/TimePicker";
 import { formatDayMonth, formatShortDate, formatWeekday, toISODate } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
 import { linkedItemsFor, linkTargetHref } from "@/lib/links";
@@ -155,11 +154,13 @@ export function EntryItem({
             />
             <DatePicker value={draftDate} onChange={setDraftDate} className="w-[9.5rem] shrink-0" />
             {entry.kind === "exam" && (
-              <TimePicker
+              <input
+                type="time"
                 value={draftTime}
-                onChange={setDraftTime}
+                onChange={(e) => setDraftTime(e.target.value)}
                 onKeyDown={(e) => e.key === "Escape" && cancelEditing()}
-                className="w-[6.5rem] shrink-0"
+                aria-label="Horário (opcional)"
+                className="w-[6.5rem] shrink-0 rounded-xl border-2 border-pink-200 bg-white px-2 py-2 text-center text-sm text-ink outline-none transition-colors focus:border-pink-400"
               />
             )}
             <button

@@ -3,7 +3,6 @@
 import { useState, useTransition } from "react";
 import { Plus } from "lucide-react";
 import { createTask } from "@/app/actions/tasks";
-import { TimePicker } from "@/components/TimePicker";
 import { isSubmitEnter } from "@/lib/keyboard";
 import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
 
@@ -43,7 +42,13 @@ export function AddTaskForm({ date }: { date: string }) {
         placeholder="Nova tarefa..."
         className="min-w-0 flex-1 resize-none overflow-hidden rounded-2xl border border-pink-200/80 bg-white px-4 py-3 text-ink shadow-soft outline-none transition-all placeholder:text-ink-soft focus:border-pink-300 focus:shadow-lift"
       />
-      <TimePicker value={time} onChange={setTime} className="w-[6.5rem] shrink-0" />
+      <input
+        type="time"
+        value={time}
+        onChange={(e) => setTime(e.target.value)}
+        aria-label="Horário (opcional)"
+        className="w-[6.5rem] shrink-0 rounded-2xl border border-pink-200/80 bg-white px-2 py-3 text-center text-sm text-ink shadow-soft outline-none transition-all focus:border-pink-300 focus:shadow-lift"
+      />
       <button
         type="submit"
         disabled={!title.trim()}

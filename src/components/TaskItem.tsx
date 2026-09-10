@@ -8,7 +8,6 @@ import { toggleTask, deleteTask, moveTask, updateTask } from "@/app/actions/task
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
-import { TimePicker } from "@/components/TimePicker";
 import { formatShortDate, toISODate } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
 import { linkedItemsFor, linkTargetHref } from "@/lib/links";
@@ -185,11 +184,13 @@ export function TaskItem({
               aria-label="Nome da tarefa"
               className="min-w-0 flex-1 basis-full resize-none overflow-hidden rounded-xl border-2 border-pink-300 bg-white px-3 py-2 text-ink outline-none transition-colors focus:border-pink-400 sm:basis-0"
             />
-            <TimePicker
+            <input
+              type="time"
               value={draftTime}
-              onChange={setDraftTime}
+              onChange={(e) => setDraftTime(e.target.value)}
               onKeyDown={(e) => e.key === "Escape" && cancelEditing()}
-              className="w-[6.5rem] shrink-0"
+              aria-label="Horário (opcional)"
+              className="w-[6.5rem] shrink-0 rounded-xl border-2 border-pink-200 bg-white px-2 py-2 text-center text-sm text-ink outline-none transition-colors focus:border-pink-400"
             />
             <button
               type="submit"
