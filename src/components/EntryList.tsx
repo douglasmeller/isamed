@@ -1,7 +1,19 @@
 import { EntryItem } from "@/components/EntryItem";
-import type { Entry } from "@/lib/types";
+import type { DayItem, Entry, ItemLink } from "@/lib/types";
 
-export function EntryList({ entries, emptyLabel }: { entries: Entry[]; emptyLabel: string }) {
+export function EntryList({
+  entries,
+  emptyLabel,
+  dayItems,
+  links,
+  onLinksChange,
+}: {
+  entries: Entry[];
+  emptyLabel: string;
+  dayItems?: DayItem[];
+  links?: ItemLink[];
+  onLinksChange?: () => void;
+}) {
   if (entries.length === 0) {
     return (
       <p className="rounded-2xl border-2 border-dashed border-pink-200 px-4 py-6 text-center text-ink-soft">
@@ -17,7 +29,13 @@ export function EntryList({ entries, emptyLabel }: { entries: Entry[]; emptyLabe
   return (
     <div className="flex flex-col gap-2.5">
       {sorted.map((entry) => (
-        <EntryItem key={entry.id} entry={entry} />
+        <EntryItem
+          key={entry.id}
+          entry={entry}
+          dayItems={dayItems}
+          links={links}
+          onLinksChange={onLinksChange}
+        />
       ))}
     </div>
   );

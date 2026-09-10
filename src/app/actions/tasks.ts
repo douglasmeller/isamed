@@ -49,6 +49,9 @@ export async function moveTask(id: string, date: string) {
 
   const supabase = await createClient();
   await supabase.from("tasks").update({ date }).eq("id", id);
+  // Vinculo so faz sentido entre itens do mesmo dia; ao mudar de dia, o
+  // vinculo anterior deixa de valer.
+  await supabase.from("item_links").delete().or(`and(a_type.eq.task,a_id.eq.${id}),and(b_type.eq.task,b_id.eq.${id})`);
 
   revalidatePath("/");
   revalidatePath("/calendario");
@@ -57,6 +60,8 @@ export async function moveTask(id: string, date: string) {
 export async function deleteTask(id: string) {
   const supabase = await createClient();
   await supabase.from("tasks").delete().eq("id", id);
+  // Sem isso, o vinculo ficaria orfao apontando pra uma tarefa que nao existe mais.
+  await supabase.from("item_links").delete().or(`and(a_type.eq.task,a_id.eq.${id}),and(b_type.eq.task,b_id.eq.${id})`);
 
   revalidatePath("/");
   revalidatePath("/calendario");

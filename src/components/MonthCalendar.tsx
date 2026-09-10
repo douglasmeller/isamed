@@ -1,14 +1,17 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { getMonthGrid, WEEKDAY_LABELS } from "@/lib/calendarGrid";
 import { formatDayMonth, formatMonthYear, formatWeekday, toISODate } from "@/lib/dates";
 import { cn } from "@/lib/cn";
 import { AddTaskForm } from "@/components/AddTaskForm";
 import { TaskList } from "@/components/TaskList";
-import type { Entry, Task } from "@/lib/types";
+import { AddEntryForm } from "@/components/AddEntryForm";
+import { EntryList } from "@/components/EntryList";
+import { getLinksForDate } from "@/app/actions/links";
+import type { DayItem, Entry, ItemLink, Task } from "@/lib/types";
 
 export function MonthCalendar({
   year,
@@ -32,6 +35,26 @@ export function MonthCalendar({
     gridMonthISO === currentMonthISO ? todayISO : toISODate(monthDate),
   );
 
+  const [links, setLinks] = useState<ItemLink[]>([]);
+
+  // Os vinculos so fazem sentido dentro do dia aberto, entao buscamos de novo
+  // sempre que o dia selecionado muda (em vez de trazer tudo do mes inteiro).
+  useEffect(() => {
+    let cancelled = false;
+    getLinksForDate(selected).then((data) => {
+      if (!cancelled) setLinks(data);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [selected]);
+
+  // Vincular/desvincular muda o banco mas nao o retorno de getLinksForDate ja
+  // buscado; sem isso o item so mostraria o vinculo apos trocar de dia.
+  const refreshLinks = () => {
+    getLinksForDate(selected).then(setLinks);
+  };
+
   const tasksByDate = new Map<string, Task[]>();
   for (const task of tasks) {
     const list = tasksByDate.get(task.date) ?? [];
@@ -49,6 +72,18 @@ export function MonthCalendar({
   const prevMonth = new Date(year, month - 1, 1);
   const nextMonth = new Date(year, month + 1, 1);
   const selectedDate = new Date(`${selected}T00:00:00`);
+
+  const selectedTasks = tasksByDate.get(selected) ?? [];
+  const selectedEntries = entriesByDate.get(selected) ?? [];
+  const selectedExams = selectedEntries.filter((e) => e.kind === "exam");
+  const selectedNotes = selectedEntries.filter((e) => e.kind === "note");
+
+  // Lista combinada do dia (tarefas + provas + anotacoes), usada pra oferecer
+  // as opcoes de vinculo em cada item.
+  const dayItems: DayItem[] = [
+    ...selectedTasks.map((t) => ({ type: "task" as const, id: t.id, title: t.title })),
+    ...selectedEntries.map((e) => ({ type: "entry" as const, id: e.id, title: e.title, kind: e.kind })),
+  ];
 
   return (
     <div className="flex flex-col gap-6">
@@ -168,14 +203,45 @@ export function MonthCalendar({
         </div>
       </div>
 
-      <div>
-        <p className="mb-3 text-sm font-semibold text-ink-soft">
+      <div className="flex flex-col gap-8">
+        <p className="text-sm font-semibold text-ink-soft">
           {formatWeekday(selectedDate)}, {formatDayMonth(selectedDate)}
         </p>
-        <div className="flex flex-col gap-3">
+
+        <section className="flex flex-col gap-3">
+          <h2 className="text-sm font-semibold text-ink">Tarefas</h2>
           <AddTaskForm date={selected} />
-          <TaskList tasks={tasksByDate.get(selected) ?? []} />
-        </div>
+          <TaskList
+            tasks={selectedTasks}
+            dayItems={dayItems}
+            links={links}
+            onLinksChange={refreshLinks}
+          />
+        </section>
+
+        <section className="flex flex-col gap-3">
+          <h2 className="text-sm font-semibold text-ink">Provas</h2>
+          <AddEntryForm kind="exam" placeholder="Nome da prova..." date={selected} />
+          <EntryList
+            entries={selectedExams}
+            emptyLabel="Nenhuma prova nesse dia."
+            dayItems={dayItems}
+            links={links}
+            onLinksChange={refreshLinks}
+          />
+        </section>
+
+        <section className="flex flex-col gap-3">
+          <h2 className="text-sm font-semibold text-ink">Anotações</h2>
+          <AddEntryForm kind="note" placeholder="Nova anotação..." date={selected} />
+          <EntryList
+            entries={selectedNotes}
+            emptyLabel="Nenhuma anotação nesse dia."
+            dayItems={dayItems}
+            links={links}
+            onLinksChange={refreshLinks}
+          />
+        </section>
       </div>
     </div>
   );

@@ -45,6 +45,12 @@ export async function moveEntry(id: string, date: string) {
 
   const supabase = await createClient();
   await supabase.from("entries").update({ date }).eq("id", id);
+  // Vinculo so faz sentido entre itens do mesmo dia; ao mudar de dia, o
+  // vinculo anterior deixa de valer.
+  await supabase
+    .from("item_links")
+    .delete()
+    .or(`and(a_type.eq.entry,a_id.eq.${id}),and(b_type.eq.entry,b_id.eq.${id})`);
 
   revalidateEntries();
 }
@@ -52,6 +58,11 @@ export async function moveEntry(id: string, date: string) {
 export async function deleteEntry(id: string) {
   const supabase = await createClient();
   await supabase.from("entries").delete().eq("id", id);
+  // Sem isso, o vinculo ficaria orfao apontando pra um item que nao existe mais.
+  await supabase
+    .from("item_links")
+    .delete()
+    .or(`and(a_type.eq.entry,a_id.eq.${id}),and(b_type.eq.entry,b_id.eq.${id})`);
 
   revalidateEntries();
 }

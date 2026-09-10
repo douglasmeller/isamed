@@ -3,22 +3,36 @@
 import { useRef, useState, useTransition } from "react";
 import { Plus } from "lucide-react";
 import { createEntry } from "@/app/actions/entries";
+import { DatePicker } from "@/components/DatePicker";
+import { cn } from "@/lib/cn";
 import { toISODate } from "@/lib/dates";
 import type { EntryKind } from "@/lib/types";
 
-export function AddEntryForm({ kind, placeholder }: { kind: EntryKind; placeholder: string }) {
+export function AddEntryForm({
+  kind,
+  placeholder,
+  date,
+}: {
+  kind: EntryKind;
+  placeholder: string;
+  // Quando informada, o formulario ja usa essa data (ex: dentro do painel de
+  // um dia do calendario) e nao mostra o seletor de data.
+  date?: string;
+}) {
   const [title, setTitle] = useState("");
-  const [date, setDate] = useState(() => toISODate(new Date()));
+  const [pickedDate, setPickedDate] = useState(() => date ?? toISODate(new Date()));
   const [, startTransition] = useTransition();
   const titleRef = useRef<HTMLInputElement>(null);
+
+  const effectiveDate = date ?? pickedDate;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = title.trim();
-    if (!trimmed || !date) return;
+    if (!trimmed || !effectiveDate) return;
 
     startTransition(() => {
-      createEntry(kind, { title: trimmed, date });
+      createEntry(kind, { title: trimmed, date: effectiveDate });
     });
 
     setTitle("");
@@ -33,18 +47,17 @@ export function AddEntryForm({ kind, placeholder }: { kind: EntryKind; placehold
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder={placeholder}
-        className="min-w-0 flex-1 basis-full rounded-2xl border border-pink-200/80 bg-white px-4 py-3 text-ink shadow-soft outline-none transition-all placeholder:text-ink-soft focus:border-pink-300 focus:shadow-lift sm:basis-0"
+        className={cn(
+          "min-w-0 flex-1 rounded-2xl border border-pink-200/80 bg-white px-4 py-3 text-ink shadow-soft outline-none transition-all placeholder:text-ink-soft focus:border-pink-300 focus:shadow-lift",
+          !date && "basis-full sm:basis-0",
+        )}
       />
-      <input
-        type="date"
-        value={date}
-        onChange={(e) => setDate(e.target.value)}
-        aria-label="Data"
-        className="w-[9.5rem] shrink-0 rounded-2xl border border-pink-200/80 bg-white px-2 py-3 text-center text-sm text-ink shadow-soft outline-none transition-all focus:border-pink-300 focus:shadow-lift"
-      />
+      {!date && (
+        <DatePicker value={pickedDate} onChange={setPickedDate} className="w-[9.5rem] shrink-0" />
+      )}
       <button
         type="submit"
-        disabled={!title.trim() || !date}
+        disabled={!title.trim() || !effectiveDate}
         aria-label="Adicionar"
         className="flex h-[3.1rem] w-[3.1rem] shrink-0 items-center justify-center rounded-2xl bg-pink-500 text-white shadow-lift transition-all hover:-translate-y-px hover:bg-pink-600 hover:shadow-float active:translate-y-0 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50 disabled:shadow-soft"
       >
