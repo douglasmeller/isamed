@@ -5,8 +5,10 @@ import Link from "next/link";
 import { CalendarSync, Check, Pencil, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { deleteEntry, moveEntry, updateEntry } from "@/app/actions/entries";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
+import { TimePicker } from "@/components/TimePicker";
 import { formatDayMonth, formatShortDate, formatWeekday, toISODate } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
 import { linkedItemsFor, linkTargetHref } from "@/lib/links";
@@ -29,6 +31,7 @@ export function EntryItem({
   const [removed, setRemoved] = useState(false);
   const [moving, setMoving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   const [title, setTitle] = useState(entry.title);
   const [date, setDate] = useState(entry.date);
@@ -42,6 +45,7 @@ export function EntryItem({
   const [, startTransition] = useTransition();
 
   const handleDelete = () => {
+    setConfirmingDelete(false);
     setRemoved(true);
     startTransition(() => {
       deleteEntry(entry.id);
@@ -151,13 +155,11 @@ export function EntryItem({
             />
             <DatePicker value={draftDate} onChange={setDraftDate} className="w-[9.5rem] shrink-0" />
             {entry.kind === "exam" && (
-              <input
-                type="time"
+              <TimePicker
                 value={draftTime}
-                onChange={(e) => setDraftTime(e.target.value)}
+                onChange={setDraftTime}
                 onKeyDown={(e) => e.key === "Escape" && cancelEditing()}
-                aria-label="Horário (opcional)"
-                className="w-[6.5rem] shrink-0 rounded-xl border-2 border-pink-200 bg-white px-2 py-2 text-center text-sm text-ink outline-none transition-colors focus:border-pink-400"
+                className="w-[6.5rem] shrink-0"
               />
             )}
             <button
@@ -243,7 +245,7 @@ export function EntryItem({
 
                 <button
                   type="button"
-                  onClick={handleDelete}
+                  onClick={() => setConfirmingDelete(true)}
                   aria-label="Excluir"
                   title="Excluir"
                   className={cn(actionButton, hoverReveal)}
@@ -275,6 +277,13 @@ export function EntryItem({
           })}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmingDelete}
+        itemLabel={title}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmingDelete(false)}
+      />
     </div>
   );
 }

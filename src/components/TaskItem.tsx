@@ -5,8 +5,10 @@ import Link from "next/link";
 import { CalendarSync, Check, Pencil, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/cn";
 import { toggleTask, deleteTask, moveTask, updateTask } from "@/app/actions/tasks";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
+import { TimePicker } from "@/components/TimePicker";
 import { formatShortDate, toISODate } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
 import { linkedItemsFor, linkTargetHref } from "@/lib/links";
@@ -30,6 +32,7 @@ export function TaskItem({
   const [removed, setRemoved] = useState(false);
   const [moving, setMoving] = useState(false);
   const [editing, setEditing] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
   // O que aparece no card. Atualizamos na hora de salvar para a mudanca ser
   // imediata, sem esperar o servidor responder.
@@ -52,6 +55,7 @@ export function TaskItem({
   };
 
   const handleDelete = () => {
+    setConfirmingDelete(false);
     setRemoved(true);
     startTransition(() => {
       deleteTask(task.id);
@@ -181,13 +185,11 @@ export function TaskItem({
               aria-label="Nome da tarefa"
               className="min-w-0 flex-1 basis-full resize-none overflow-hidden rounded-xl border-2 border-pink-300 bg-white px-3 py-2 text-ink outline-none transition-colors focus:border-pink-400 sm:basis-0"
             />
-            <input
-              type="time"
+            <TimePicker
               value={draftTime}
-              onChange={(e) => setDraftTime(e.target.value)}
+              onChange={setDraftTime}
               onKeyDown={(e) => e.key === "Escape" && cancelEditing()}
-              aria-label="Horário (opcional)"
-              className="w-[6.5rem] shrink-0 rounded-xl border-2 border-pink-200 bg-white px-2 py-2 text-center text-sm text-ink outline-none transition-colors focus:border-pink-400"
+              className="w-[6.5rem] shrink-0"
             />
             <button
               type="submit"
@@ -275,7 +277,7 @@ export function TaskItem({
 
                 <button
                   type="button"
-                  onClick={handleDelete}
+                  onClick={() => setConfirmingDelete(true)}
                   aria-label="Excluir tarefa"
                   title="Excluir tarefa"
                   className={cn(actionButton, hoverReveal)}
@@ -307,6 +309,13 @@ export function TaskItem({
           })}
         </div>
       )}
+
+      <ConfirmDialog
+        open={confirmingDelete}
+        itemLabel={title}
+        onConfirm={handleDelete}
+        onCancel={() => setConfirmingDelete(false)}
+      />
     </div>
   );
 }

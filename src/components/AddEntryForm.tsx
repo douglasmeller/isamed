@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import { Plus } from "lucide-react";
 import { createEntry } from "@/app/actions/entries";
 import { DatePicker } from "@/components/DatePicker";
+import { TimePicker } from "@/components/TimePicker";
 import { cn } from "@/lib/cn";
 import { toISODate } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
@@ -63,13 +64,7 @@ export function AddEntryForm({
         )}
       />
       {kind === "exam" && (
-        <input
-          type="time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          aria-label="Horário (opcional)"
-          className="w-[6.5rem] shrink-0 rounded-2xl border border-pink-200/80 bg-white px-2 py-3 text-center text-sm text-ink shadow-soft outline-none transition-all focus:border-pink-300 focus:shadow-lift"
-        />
+        <TimePicker value={time} onChange={setTime} className="w-[6.5rem] shrink-0" />
       )}
       {!date && (
         <DatePicker value={pickedDate} onChange={setPickedDate} className="w-[9.5rem] shrink-0" />

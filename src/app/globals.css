@@ -59,6 +59,7 @@
 
 html {
   height: 100%;
+  background: var(--color-cloud);
 }
 
 body {
@@ -67,6 +68,10 @@ body {
   color: var(--color-ink);
   font-family: var(--font-rounded), ui-rounded, "Segoe UI", sans-serif;
   -webkit-tap-highlight-color: transparent;
+  /* Sem isso, arrastar alem do topo/fim da pagina no celular da o efeito de
+     "elastico" (rubber-band): a pagina inteira desliza por um instante e
+     revela um vao embaixo da barra inferior fixa. */
+  overscroll-behavior-y: none;
 }
 
 * {
