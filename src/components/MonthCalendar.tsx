@@ -147,6 +147,25 @@ export function MonthCalendar({
             );
           })}
         </div>
+
+        <div className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-pink-100 pt-3 text-xs font-medium text-ink-soft">
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-pink-500" />
+            Tarefa pendente
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-pink-300" />
+            Tarefa feita
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-purple-500" />
+            Prova
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-rose-800" />
+            Anotação
+          </span>
+        </div>
       </div>
 
       <div>
