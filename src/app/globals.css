@@ -60,18 +60,23 @@
 html {
   height: 100%;
   background: var(--color-cloud);
+  /* overscroll-behavior no body nao basta no Safari/iOS: o "elastico" do
+     scroll ao arrastar alem do fim da pagina acontece no nivel nativo da
+     viewport, nao so via encadeamento de scroll do CSS. A correcao de
+     verdade e nunca deixar html/body rolarem -- quem rola de fato e o
+     container dentro de AppLayout (ver src/app/(app)/layout.tsx), cujo
+     proprio elastico fica contido na caixa dele e nunca vaza por baixo da
+     barra fixa. */
+  overflow: hidden;
 }
 
 body {
-  min-height: 100%;
+  height: 100%;
   background: var(--color-cloud);
   color: var(--color-ink);
   font-family: var(--font-rounded), ui-rounded, "Segoe UI", sans-serif;
   -webkit-tap-highlight-color: transparent;
-  /* Sem isso, arrastar alem do topo/fim da pagina no celular da o efeito de
-     "elastico" (rubber-band): a pagina inteira desliza por um instante e
-     revela um vao embaixo da barra inferior fixa. */
-  overscroll-behavior-y: none;
+  overflow: hidden;
 }
 
 * {
