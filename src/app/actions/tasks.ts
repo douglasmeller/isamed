@@ -24,6 +24,26 @@ export async function createTask(input: { title: string; date: string; time: str
   revalidatePath("/calendario");
 }
 
+export async function createOpenTask(input: { title: string }) {
+  const title = input.title.trim();
+  if (!title) return;
+
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) return;
+
+  await supabase.from("tasks").insert({
+    title,
+    date: null,
+    was_open: true,
+    user_id: user.id,
+  });
+
+  revalidatePath("/em-aberto");
+}
+
 export async function toggleTask(id: string, done: boolean) {
   const supabase = await createClient();
   await supabase.from("tasks").update({ done }).eq("id", id);
@@ -41,6 +61,7 @@ export async function updateTask(id: string, input: { title: string; time: strin
 
   revalidatePath("/tarefas-estudos");
   revalidatePath("/calendario");
+  revalidatePath("/em-aberto");
 }
 
 export async function moveTask(id: string, date: string) {
@@ -55,6 +76,9 @@ export async function moveTask(id: string, date: string) {
 
   revalidatePath("/tarefas-estudos");
   revalidatePath("/calendario");
+  // Se essa tarefa estava em "Em aberto" (sem dia), ela sai de la ao
+  // receber uma data -- precisa revalidar pra sumir da lista.
+  revalidatePath("/em-aberto");
 }
 
 export async function deleteTask(id: string) {
@@ -65,4 +89,5 @@ export async function deleteTask(id: string) {
 
   revalidatePath("/tarefas-estudos");
   revalidatePath("/calendario");
+  revalidatePath("/em-aberto");
 }

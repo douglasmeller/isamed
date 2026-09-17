@@ -129,16 +129,26 @@ export function TaskItem({
   const linked = allLinks ? linkedItemsFor(self, allLinks) : [];
   const today = toISODate(new Date());
 
+  // Tarefa que veio de "Em aberto" carrega o contorno amarelo pra sempre,
+  // mesmo depois de concluida -- por isso a cor da borda fica de fora do
+  // efeito normal de "pendente vs. concluida".
+  const cardBorderClass = task.was_open
+    ? "border-2 border-yellow-400"
+    : optimisticDone
+      ? "border border-transparent"
+      : "border border-pink-100/80";
+
   return (
     <div
       id={`item-task-${task.id}`}
       className={cn(
-        "group flex flex-col gap-1.5 rounded-2xl border border-pink-100/80 bg-white px-3 py-3 shadow-soft transition-all duration-200 sm:px-4",
+        "group flex flex-col gap-1.5 rounded-2xl bg-white px-3 py-3 shadow-soft transition-all duration-200 sm:px-4",
+        cardBorderClass,
         // Tarefa pendente ganha relevo ao passar o mouse; concluida fica
         // rebaixada, reforcando visualmente que ja saiu da fila.
-        optimisticDone
-          ? "border-transparent bg-pink-50 shadow-none"
-          : "hover:-translate-y-px hover:border-pink-200 hover:shadow-lift",
+        optimisticDone && "bg-pink-50 shadow-none",
+        !optimisticDone && "hover:-translate-y-px hover:shadow-lift",
+        !optimisticDone && !task.was_open && "hover:border-pink-200",
       )}
     >
       <div className="flex items-center gap-2 sm:gap-3">
@@ -221,6 +231,12 @@ export function TaskItem({
                 )}
               >
                 {time}
+              </span>
+            )}
+
+            {task.was_open && (
+              <span className="shrink-0 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-semibold text-yellow-700">
+                (Em aberto →)
               </span>
             )}
 

@@ -5,6 +5,16 @@ export type Task = {
   date: string; // YYYY-MM-DD
   time: string | null; // HH:MM:SS
   done: boolean;
+  // Marca permanente: essa tarefa nasceu em "Em aberto" (sem dia) e depois
+  // ganhou uma data. Usado pra mostrar o aviso "(Em aberto ->)".
+  was_open: boolean;
+  created_at: string;
+};
+
+// Tarefa pendente na tela "Em aberto" -- ainda sem data, so titulo.
+export type OpenTask = {
+  id: string;
+  title: string;
   created_at: string;
 };
 

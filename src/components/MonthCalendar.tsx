@@ -119,6 +119,7 @@ export function MonthCalendar({
             const dayTasks = tasksByDate.get(iso) ?? [];
             const hasPending = dayTasks.some((t) => !t.done);
             const hasDone = dayTasks.some((t) => t.done);
+            const hasOpenOrigin = dayTasks.some((t) => t.was_open);
 
             const dayEntries = entriesByDate.get(iso) ?? [];
             const hasExam = dayEntries.some((e) => e.kind === "exam");
@@ -171,6 +172,14 @@ export function MonthCalendar({
                       )}
                     />
                   )}
+                  {hasOpenOrigin && (
+                    <span
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        isSelected ? "bg-white" : "bg-yellow-400",
+                      )}
+                    />
+                  )}
                 </span>
               </button>
             );
@@ -193,6 +202,10 @@ export function MonthCalendar({
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-rose-800" />
             Anotação
+          </span>
+          <span className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full bg-yellow-400" />
+            Veio de Em aberto
           </span>
         </div>
       </div>

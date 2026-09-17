@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, FileQuestion, ListChecks, NotebookPen } from "lucide-react";
+import { CalendarDays, FileQuestion, Inbox, ListChecks, NotebookPen } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 const items = [
@@ -11,6 +11,7 @@ const items = [
   { href: "/tarefas-estudos", label: "Tarefas/Estudos", icon: ListChecks },
   { href: "/provas", label: "Provas", icon: FileQuestion },
   { href: "/anotacoes", label: "Anotações", icon: NotebookPen },
+  { href: "/em-aberto", label: "Em aberto", icon: Inbox },
 ];
 
 export function Nav() {
