@@ -205,7 +205,7 @@ export function MonthCalendar({
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-yellow-400" />
-            Veio de Em aberto
+            Estava em aberto
           </span>
         </div>
       </div>
