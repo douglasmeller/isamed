@@ -131,9 +131,11 @@ export function TaskItem({
 
   // Tarefa que veio de "Em aberto" carrega o contorno azul pra sempre,
   // mesmo depois de concluida -- por isso a cor da borda fica de fora do
-  // efeito normal de "pendente vs. concluida".
+  // efeito normal de "pendente vs. concluida". Mesma "receita" da borda
+  // rosa padrao (so 1px, tom claro com opacidade), so trocando a cor,
+  // pra ficar discreto e nao um contorno grosso chamativo.
   const cardBorderClass = task.was_open
-    ? "border-2 border-blue-300"
+    ? "border border-blue-300/70"
     : optimisticDone
       ? "border border-transparent"
       : "border border-pink-100/80";
