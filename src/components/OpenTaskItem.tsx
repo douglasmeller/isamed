@@ -30,7 +30,7 @@ export function OpenTaskItem({ task }: { task: OpenTask }) {
   };
 
   // Definir um dia tira a tarefa dessa tela -- ela passa a aparecer em
-  // Tarefas/Estudos (com o aviso "Em aberto ->").
+  // Tarefas/Estudos, com contorno azul.
   const handleSchedule = (date: string) => {
     if (!date) return;
     setRemoved(true);

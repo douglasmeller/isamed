@@ -6,7 +6,8 @@ export type Task = {
   time: string | null; // HH:MM:SS
   done: boolean;
   // Marca permanente: essa tarefa nasceu em "Em aberto" (sem dia) e depois
-  // ganhou uma data. Usado pra mostrar o aviso "(Em aberto ->)".
+  // ganhou uma data. Usado pro contorno azul na tarefa e a bolinha no
+  // calendario.
   was_open: boolean;
   created_at: string;
 };

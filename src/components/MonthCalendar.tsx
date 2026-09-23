@@ -176,7 +176,7 @@ export function MonthCalendar({
                     <span
                       className={cn(
                         "h-1.5 w-1.5 rounded-full",
-                        isSelected ? "bg-white" : "bg-yellow-400",
+                        isSelected ? "bg-white" : "bg-blue-300",
                       )}
                     />
                   )}
@@ -202,10 +202,6 @@ export function MonthCalendar({
           <span className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-rose-800" />
             Anotação
-          </span>
-          <span className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-yellow-400" />
-            Estava em aberto
           </span>
         </div>
       </div>

@@ -129,11 +129,11 @@ export function TaskItem({
   const linked = allLinks ? linkedItemsFor(self, allLinks) : [];
   const today = toISODate(new Date());
 
-  // Tarefa que veio de "Em aberto" carrega o contorno amarelo pra sempre,
+  // Tarefa que veio de "Em aberto" carrega o contorno azul pra sempre,
   // mesmo depois de concluida -- por isso a cor da borda fica de fora do
   // efeito normal de "pendente vs. concluida".
   const cardBorderClass = task.was_open
-    ? "border-2 border-yellow-400"
+    ? "border-2 border-blue-300"
     : optimisticDone
       ? "border border-transparent"
       : "border border-pink-100/80";
@@ -231,12 +231,6 @@ export function TaskItem({
                 )}
               >
                 {time}
-              </span>
-            )}
-
-            {task.was_open && (
-              <span className="shrink-0 rounded-full bg-yellow-100 px-2.5 py-1 text-xs font-semibold text-yellow-700">
-                (Em aberto →)
               </span>
             )}
 
