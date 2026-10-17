@@ -6,6 +6,7 @@ import { CalendarDays, ChevronLeft, ChevronRight, type LucideIcon } from "lucide
 import { getMonthGrid, WEEKDAY_LABELS } from "@/lib/calendarGrid";
 import { formatDayMonth, formatMonthYear, toISODate } from "@/lib/dates";
 import { cn } from "@/lib/cn";
+import { usePopoverPosition } from "@/lib/usePopoverPosition";
 
 // Calendario proprio (paleta rosa do site) para substituir o seletor nativo
 // do <input type="date">, que varia de aparencia entre navegador/SO.
@@ -34,7 +35,7 @@ export function DatePicker({
   extraAction?: { label: string; icon: LucideIcon; onClick: () => void };
 }) {
   const [open, setOpen] = useState(autoOpen);
-  const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
+  const [anchor, setAnchor] = useState<DOMRect | null>(null);
   const baseDate = value ? new Date(`${value}T00:00:00`) : new Date();
   const [viewYear, setViewYear] = useState(baseDate.getFullYear());
   const [viewMonth, setViewMonth] = useState(baseDate.getMonth());
@@ -48,12 +49,10 @@ export function DatePicker({
 
   const placeCoords = () => {
     const rect = triggerRef.current?.getBoundingClientRect();
-    if (!rect) return;
-    setCoords({
-      top: rect.bottom + 8,
-      left: align === "right" ? rect.right - 256 : rect.left,
-    });
+    if (rect) setAnchor(rect);
   };
+
+  usePopoverPosition(popoverRef, open ? anchor : null, align);
 
   // Se abrir sozinho (fluxo de "mudar de dia"), calcula a posicao assim que
   // o botao existir na tela.
@@ -71,16 +70,20 @@ export function DatePicker({
       close();
     };
     // Fecha em vez de reposicionar -- mais simples do que recalcular as
-    // coordenadas a cada scroll/resize.
-    const handleReflow = () => close();
+    // coordenadas a cada scroll/resize. Rolar dentro do proprio popup nao conta.
+    const handleScroll = (e: Event) => {
+      if (popoverRef.current?.contains(e.target as Node)) return;
+      close();
+    };
+    const handleResize = () => close();
 
     document.addEventListener("mousedown", handlePointerDown);
-    window.addEventListener("scroll", handleReflow, true);
-    window.addEventListener("resize", handleReflow);
+    window.addEventListener("scroll", handleScroll, true);
+    window.addEventListener("resize", handleResize);
     return () => {
       document.removeEventListener("mousedown", handlePointerDown);
-      window.removeEventListener("scroll", handleReflow, true);
-      window.removeEventListener("resize", handleReflow);
+      window.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("resize", handleResize);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
@@ -131,12 +134,13 @@ export function DatePicker({
       </button>
 
       {open &&
-        coords &&
+        anchor &&
         createPortal(
           <div
             ref={popoverRef}
-            style={{ position: "fixed", top: coords.top, left: coords.left }}
-            className="z-50 w-64 rounded-2xl border border-pink-100 bg-white p-3 shadow-float"
+            // top/left reais vem do usePopoverPosition, antes da pintura.
+            style={{ position: "fixed", top: 0, left: 0 }}
+            className="z-50 max-h-[calc(100dvh-16px)] w-64 overflow-y-auto rounded-2xl border border-pink-100 bg-white p-3 shadow-float"
           >
             <div className="mb-2 flex items-center justify-between">
               <span className="text-sm font-semibold capitalize text-ink">{monthLabel}</span>

@@ -17,6 +17,7 @@ import { getMonthGrid, WEEKDAY_LABELS } from "@/lib/calendarGrid";
 import { cn } from "@/lib/cn";
 import { addDays, formatDayMonth, formatMonthYear, toISODate } from "@/lib/dates";
 import { areLinked } from "@/lib/links";
+import { usePopoverPosition } from "@/lib/usePopoverPosition";
 import type { DayItem, ItemLink } from "@/lib/types";
 
 function ItemIcon({ item }: { item: DayItem }) {
@@ -40,7 +41,7 @@ export function LinkPicker({
   triggerClassName?: string;
 }) {
   const [open, setOpen] = useState(false);
-  const [coords, setCoords] = useState<{ top: number; right: number } | null>(null);
+  const [anchor, setAnchor] = useState<DOMRect | null>(null);
   const [viewingDate, setViewingDate] = useState(self.date);
   const [showCalendar, setShowCalendar] = useState(false);
   const [calView, setCalView] = useState(() => {
@@ -55,7 +56,7 @@ export function LinkPicker({
 
   const openPicker = () => {
     const rect = triggerRef.current?.getBoundingClientRect();
-    if (rect) setCoords({ top: rect.bottom + 8, right: window.innerWidth - rect.right });
+    if (rect) setAnchor(rect);
     setViewingDate(self.date);
     setShowCalendar(false);
     setOpen(true);
@@ -69,18 +70,25 @@ export function LinkPicker({
       close();
     };
     // Fecha em vez de reposicionar -- mais simples do que recalcular as
-    // coordenadas a cada scroll/resize.
-    const handleReflow = () => close();
+    // coordenadas a cada scroll/resize. Rolar a lista dentro do proprio
+    // popup nao conta.
+    const handleScroll = (e: Event) => {
+      if (popoverRef.current?.contains(e.target as Node)) return;
+      close();
+    };
+    const handleResize = () => close();
 
     document.addEventListener("mousedown", handlePointerDown);
-    window.addEventListener("scroll", handleReflow, true);
-    window.addEventListener("resize", handleReflow);
+    window.addEventListener("scroll", handleScroll, true);
+    window.addEventListener("resize", handleResize);
     return () => {
       document.removeEventListener("mousedown", handlePointerDown);
-      window.removeEventListener("scroll", handleReflow, true);
-      window.removeEventListener("resize", handleReflow);
+      window.removeEventListener("scroll", handleScroll, true);
+      window.removeEventListener("resize", handleResize);
     };
   }, [open]);
+
+  usePopoverPosition(popoverRef, open ? anchor : null, "right");
 
   const loading = open && !cache[viewingDate];
 
@@ -141,12 +149,13 @@ export function LinkPicker({
       </button>
 
       {open &&
-        coords &&
+        anchor &&
         createPortal(
           <div
             ref={popoverRef}
-            style={{ position: "fixed", top: coords.top, right: coords.right }}
-            className="z-50 w-64 rounded-2xl border border-pink-100 bg-white p-2 shadow-float"
+            // top/left reais vem do usePopoverPosition, antes da pintura.
+            style={{ position: "fixed", top: 0, left: 0 }}
+            className="z-50 max-h-[calc(100dvh-16px)] w-64 overflow-y-auto rounded-2xl border border-pink-100 bg-white p-2 shadow-float"
           >
             <p className="px-2 pb-1.5 text-center text-xs font-semibold text-ink-soft">
               {formatDayMonth(viewingDateObj)}
