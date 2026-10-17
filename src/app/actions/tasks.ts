@@ -81,6 +81,22 @@ export async function moveTask(id: string, date: string) {
   revalidatePath("/em-aberto");
 }
 
+// Tira o dia da tarefa e devolve pra "Em aberto". Horario e "feita" sao
+// zerados porque em aberto e so titulo, pendente.
+export async function unscheduleTask(id: string) {
+  const supabase = await createClient();
+  await supabase
+    .from("tasks")
+    .update({ date: null, time: null, done: false, was_open: true })
+    .eq("id", id);
+  // Vinculo guarda a data dos dois lados; sem dia, ele deixa de fazer sentido.
+  await supabase.from("item_links").delete().or(`and(a_type.eq.task,a_id.eq.${id}),and(b_type.eq.task,b_id.eq.${id})`);
+
+  revalidatePath("/tarefas-estudos");
+  revalidatePath("/calendario");
+  revalidatePath("/em-aberto");
+}
+
 export async function deleteTask(id: string) {
   const supabase = await createClient();
   await supabase.from("tasks").delete().eq("id", id);

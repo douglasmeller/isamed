@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { CalendarDays, ChevronLeft, ChevronRight } from "lucide-react";
+import { CalendarDays, ChevronLeft, ChevronRight, type LucideIcon } from "lucide-react";
 import { getMonthGrid, WEEKDAY_LABELS } from "@/lib/calendarGrid";
 import { formatDayMonth, formatMonthYear, toISODate } from "@/lib/dates";
 import { cn } from "@/lib/cn";
@@ -21,6 +21,7 @@ export function DatePicker({
   align = "left",
   autoOpen = false,
   onClose,
+  extraAction,
 }: {
   value: string;
   onChange: (date: string) => void;
@@ -29,6 +30,8 @@ export function DatePicker({
   align?: "left" | "right";
   autoOpen?: boolean;
   onClose?: () => void;
+  // Botao opcional no rodape do popup (ex: "Voltar para Em aberto").
+  extraAction?: { label: string; icon: LucideIcon; onClick: () => void };
 }) {
   const [open, setOpen] = useState(autoOpen);
   const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
@@ -187,6 +190,22 @@ export function DatePicker({
                 );
               })}
             </div>
+
+            {extraAction && (
+              <div className="mt-2 border-t border-pink-100 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    extraAction.onClick();
+                    close();
+                  }}
+                  className="flex w-full items-center justify-center gap-1.5 rounded-xl px-2 py-1.5 text-xs font-semibold text-ink-soft transition-colors hover:bg-pink-100 hover:text-pink-600"
+                >
+                  <extraAction.icon className="h-3.5 w-3.5" />
+                  {extraAction.label}
+                </button>
+              </div>
+            )}
           </div>,
           document.body,
         )}

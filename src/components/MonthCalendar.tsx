@@ -10,7 +10,8 @@ import { AddTaskForm } from "@/components/AddTaskForm";
 import { TaskList } from "@/components/TaskList";
 import { AddEntryForm } from "@/components/AddEntryForm";
 import { EntryList } from "@/components/EntryList";
-import type { Entry, ItemLink, Task } from "@/lib/types";
+import { OpenTasksPicker } from "@/components/OpenTasksPicker";
+import type { Entry, ItemLink, OpenTask, Task } from "@/lib/types";
 
 export function MonthCalendar({
   year,
@@ -18,6 +19,7 @@ export function MonthCalendar({
   tasks,
   entries,
   links,
+  openTasks,
   todayISO,
   initialSelected,
   initialFocus,
@@ -27,6 +29,7 @@ export function MonthCalendar({
   tasks: Task[];
   entries: Entry[];
   links: ItemLink[];
+  openTasks: OpenTask[];
   todayISO: string;
   // Vem de ?day= e ?focus= quando se chega aqui pelo link de um item
   // vinculado, pra abrir direto no dia certo e destacar o item.
@@ -218,6 +221,7 @@ export function MonthCalendar({
         <section className="flex flex-col gap-3">
           <h2 className="text-sm font-semibold text-ink">Tarefas</h2>
           <AddTaskForm date={selected} />
+          <OpenTasksPicker openTasks={openTasks} date={selected} />
           <TaskList tasks={selectedTasks} allTasks={tasks} allEntries={entries} allLinks={links} />
         </section>
 

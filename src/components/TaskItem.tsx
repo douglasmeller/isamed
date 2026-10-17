@@ -2,9 +2,15 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
-import { CalendarSync, Check, Pencil, Trash2, X } from "lucide-react";
+import { CalendarSync, Check, Inbox, Pencil, Trash2, X } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { toggleTask, deleteTask, moveTask, updateTask } from "@/app/actions/tasks";
+import {
+  toggleTask,
+  deleteTask,
+  moveTask,
+  unscheduleTask,
+  updateTask,
+} from "@/app/actions/tasks";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
@@ -69,6 +75,13 @@ export function TaskItem({
     setRemoved(true);
     startTransition(() => {
       moveTask(task.id, date);
+    });
+  };
+
+  const handleUnschedule = () => {
+    setRemoved(true);
+    startTransition(() => {
+      unscheduleTask(task.id);
     });
   };
 
@@ -256,6 +269,11 @@ export function TaskItem({
                 autoOpen
                 align="right"
                 className="w-[9.5rem] shrink-0"
+                extraAction={{
+                  label: "Voltar para Em aberto",
+                  icon: Inbox,
+                  onClick: handleUnschedule,
+                }}
               />
             ) : (
               <>
