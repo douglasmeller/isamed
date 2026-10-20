@@ -1,5 +1,7 @@
 export type NavTab = { href: string; label: string };
 
+export const PESSOAL_TABS: NavTab[] = [{ href: "/financeiro", label: "Financeiro" }];
+
 export const ESTUDOS_TABS: NavTab[] = [
   { href: "/tarefas-estudos", label: "Tarefas/Estudos" },
   { href: "/provas", label: "Provas" },
@@ -10,6 +12,7 @@ export const ESTUDOS_TABS: NavTab[] = [
 // Telas que podem ser escolhidas como inicial em Configuracoes.
 export const START_PAGES: NavTab[] = [
   { href: "/calendario", label: "Home (Calendário)" },
+  ...PESSOAL_TABS.map((t) => ({ href: t.href, label: `Pessoal · ${t.label}` })),
   ...ESTUDOS_TABS.map((t) => ({ href: t.href, label: `Estudos · ${t.label}` })),
 ];
 

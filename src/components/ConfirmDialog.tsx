@@ -9,11 +9,14 @@ import { Trash2 } from "lucide-react";
 export function ConfirmDialog({
   open,
   itemLabel,
+  detail,
   onConfirm,
   onCancel,
 }: {
   open: boolean;
   itemLabel: string;
+  // Aviso extra opcional (ex: "Todas as 3 parcelas serao removidas.").
+  detail?: string;
   onConfirm: () => void;
   onCancel: () => void;
 }) {
@@ -45,6 +48,7 @@ export function ConfirmDialog({
         <p className="mt-1 text-sm text-ink-soft">
           Tem certeza de que quer excluir &quot;{itemLabel}&quot;?
         </p>
+        {detail && <p className="mt-1 text-sm text-ink-soft">{detail}</p>}
 
         <div className="mt-5 flex justify-end gap-2">
           <button

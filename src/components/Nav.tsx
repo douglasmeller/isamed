@@ -3,13 +3,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BookOpen, House, Settings } from "lucide-react";
+import { BookOpen, House, Settings, User } from "lucide-react";
 import { cn } from "@/lib/cn";
-import { ESTUDOS_TABS } from "@/lib/navigation";
+import { ESTUDOS_TABS, PESSOAL_TABS } from "@/lib/navigation";
 
 // Cada item do menu cobre uma secao; as subtelas ficam nas abas do topo.
 const items = [
   { href: "/calendario", label: "Home", icon: House, paths: ["/calendario"] },
+  {
+    href: PESSOAL_TABS[0].href,
+    label: "Pessoal",
+    icon: User,
+    paths: PESSOAL_TABS.map((t) => t.href),
+  },
   {
     href: ESTUDOS_TABS[0].href,
     label: "Estudos",
