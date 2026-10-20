@@ -1,7 +1,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { MonthCalendar } from "@/components/MonthCalendar";
 import { getMonthGrid } from "@/lib/calendarGrid";
-import { toISODate } from "@/lib/dates";
+import { startOfToday, toISODate } from "@/lib/dates";
+import type { Goal, GoalCheck } from "@/lib/goals";
 import type { Entry, ItemLink, OpenTask, Task } from "@/lib/types";
 
 export default async function CalendarioPage({ searchParams }: PageProps<"/calendario">) {
@@ -10,8 +11,7 @@ export default async function CalendarioPage({ searchParams }: PageProps<"/calen
   const dayParam = typeof params.day === "string" ? params.day : undefined;
   const focusParam = typeof params.focus === "string" ? params.focus : undefined;
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
+  const today = startOfToday();
 
   const [year, month] = monthParam
     ? monthParam.split("-").map(Number)
@@ -27,6 +27,8 @@ export default async function CalendarioPage({ searchParams }: PageProps<"/calen
     { data: entriesData },
     { data: linksData },
     { data: openTasksData },
+    { data: goalsData },
+    { data: goalChecksData },
   ] = await Promise.all([
     supabase.from("tasks").select("*").gte("date", rangeStart).lte("date", rangeEnd),
     supabase.from("entries").select("*").gte("date", rangeStart).lte("date", rangeEnd),
@@ -38,6 +40,12 @@ export default async function CalendarioPage({ searchParams }: PageProps<"/calen
       .select("id, title, created_at")
       .is("date", null)
       .order("created_at", { ascending: true }),
+    supabase.from("goals").select("id, title, weekdays, created_at").order("created_at", { ascending: true }),
+    supabase
+      .from("goal_checks")
+      .select("goal_id, date, status")
+      .gte("date", rangeStart)
+      .lte("date", rangeEnd),
   ]);
 
   return (
@@ -47,13 +55,17 @@ export default async function CalendarioPage({ searchParams }: PageProps<"/calen
         <p className="text-sm text-ink-soft">Organize seus dias, provas e anotações num só lugar.</p>
       </header>
 
+      {/* key: ao trocar de mes, o dia selecionado (estado local) recomeca. */}
       <MonthCalendar
+        key={`${year}-${month}`}
         year={year}
         month={month - 1}
         tasks={(tasksData ?? []) as Task[]}
         entries={(entriesData ?? []) as Entry[]}
         links={(linksData ?? []) as ItemLink[]}
         openTasks={(openTasksData ?? []) as OpenTask[]}
+        goals={(goalsData ?? []) as Goal[]}
+        goalChecks={(goalChecksData ?? []) as GoalCheck[]}
         todayISO={toISODate(today)}
         initialSelected={dayParam}
         initialFocus={focusParam}

@@ -5,7 +5,7 @@ import { Plus } from "lucide-react";
 import { createEntry } from "@/app/actions/entries";
 import { DatePicker } from "@/components/DatePicker";
 import { cn } from "@/lib/cn";
-import { toISODate } from "@/lib/dates";
+import { todayISO } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
 import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
 import type { EntryKind } from "@/lib/types";
@@ -23,7 +23,7 @@ export function AddEntryForm({
 }) {
   const [title, setTitle] = useState("");
   const [time, setTime] = useState("");
-  const [pickedDate, setPickedDate] = useState(() => date ?? toISODate(new Date()));
+  const [pickedDate, setPickedDate] = useState(() => date ?? todayISO());
   const [, startTransition] = useTransition();
   const titleRef = useAutoGrowTextarea(title);
 

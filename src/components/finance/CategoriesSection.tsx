@@ -107,6 +107,14 @@ export function CategoriesSection({
         </div>
       )}
 
+      {/* Pra soma das categorias bater com o total de gastos do mes. */}
+      {(spentByCategory.none ?? 0) > 0 && (
+        <div className="flex items-center justify-between gap-3 rounded-2xl border border-dashed border-pink-200 px-3 py-2.5 sm:px-4">
+          <span className="text-sm font-medium text-ink-soft">Sem categoria</span>
+          <span className="text-sm font-semibold text-ink-soft">{formatCents(spentByCategory.none)}</span>
+        </div>
+      )}
+
       {adding ? (
         <div className="rounded-2xl border border-pink-100 p-3 sm:p-4">
           <CategoryForm

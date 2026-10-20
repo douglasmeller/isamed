@@ -11,6 +11,9 @@ import { TaskList } from "@/components/TaskList";
 import { AddEntryForm } from "@/components/AddEntryForm";
 import { EntryList } from "@/components/EntryList";
 import { OpenTasksPicker } from "@/components/OpenTasksPicker";
+import { GoalStatusButtons } from "@/components/goals/GoalCheckButtons";
+import { useGoalChecks } from "@/components/goals/useGoalChecks";
+import { goalAppliesOn, type Goal, type GoalCheck } from "@/lib/goals";
 import type { Entry, ItemLink, OpenTask, Task } from "@/lib/types";
 
 export function MonthCalendar({
@@ -20,6 +23,8 @@ export function MonthCalendar({
   entries,
   links,
   openTasks,
+  goals,
+  goalChecks,
   todayISO,
   initialSelected,
   initialFocus,
@@ -30,6 +35,8 @@ export function MonthCalendar({
   entries: Entry[];
   links: ItemLink[];
   openTasks: OpenTask[];
+  goals: Goal[];
+  goalChecks: GoalCheck[];
   todayISO: string;
   // Vem de ?day= e ?focus= quando se chega aqui pelo link de um item
   // vinculado, pra abrir direto no dia certo e destacar o item.
@@ -37,6 +44,7 @@ export function MonthCalendar({
   initialFocus?: string;
 }) {
   const days = getMonthGrid(year, month);
+  const { getStatus, setStatus } = useGoalChecks(goalChecks);
   const monthDate = new Date(year, month, 1);
 
   const currentMonthISO = todayISO.slice(0, 7);
@@ -81,6 +89,8 @@ export function MonthCalendar({
   const selectedEntries = entriesByDate.get(selected) ?? [];
   const selectedExams = selectedEntries.filter((e) => e.kind === "exam");
   const selectedNotes = selectedEntries.filter((e) => e.kind === "note");
+  const selectedGoals = goals.filter((g) => goalAppliesOn(g, selected));
+  const selectedIsFuture = selected > todayISO;
 
   return (
     // Tela larga: calendario fixo a esquerda, painel do dia rolando a direita.
@@ -128,6 +138,11 @@ export function MonthCalendar({
             const dayEntries = entriesByDate.get(iso) ?? [];
             const hasExam = dayEntries.some((e) => e.kind === "exam");
             const hasNote = dayEntries.some((e) => e.kind === "note");
+            const goalStatuses = goals
+              .filter((g) => goalAppliesOn(g, iso))
+              .map((g) => getStatus(g.id, iso));
+            const hasGoalDone = goalStatuses.includes("done");
+            const hasGoalMissed = goalStatuses.includes("missed");
 
             return (
               <button
@@ -143,7 +158,9 @@ export function MonthCalendar({
                 )}
               >
                 {day.getDate()}
-                <span className="flex h-1.5 flex-wrap justify-center gap-0.5">
+                {/* Com muitos tipos no mesmo dia as bolinhas quebram linha
+                    no celular; min-h deixa a segunda linha crescer sem sobrepor. */}
+                <span className="flex min-h-1.5 max-w-full flex-wrap justify-center gap-0.5">
                   {hasPending && (
                     <span
                       className={cn(
@@ -184,6 +201,22 @@ export function MonthCalendar({
                       )}
                     />
                   )}
+                  {hasGoalDone && (
+                    <span
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        isSelected ? "bg-white" : "bg-emerald-400",
+                      )}
+                    />
+                  )}
+                  {hasGoalMissed && (
+                    <span
+                      className={cn(
+                        "h-1.5 w-1.5 rounded-full",
+                        isSelected ? "bg-white/70" : "bg-red-400",
+                      )}
+                    />
+                  )}
                 </span>
               </button>
             );
@@ -211,6 +244,18 @@ export function MonthCalendar({
             <span className="h-2 w-2 rounded-full bg-blue-300" />
             Estava em aberto
           </span>
+          {goals.length > 0 && (
+            <>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-emerald-400" />
+                Meta cumprida
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="h-2 w-2 rounded-full bg-red-400" />
+                Meta não cumprida
+              </span>
+            </>
+          )}
         </div>
       </div>
 
@@ -249,6 +294,38 @@ export function MonthCalendar({
             allLinks={links}
           />
         </section>
+
+        {goals.length > 0 && (
+          <section className="flex flex-col gap-3">
+            <h2 className="text-sm font-semibold text-ink">Metas</h2>
+            {selectedGoals.length === 0 ? (
+              <p className="rounded-2xl border-2 border-dashed border-pink-200 px-4 py-6 text-center text-ink-soft">
+                Nenhuma meta nesse dia.
+              </p>
+            ) : (
+              <div className="flex flex-col gap-2.5">
+                {selectedIsFuture && (
+                  <p className="text-xs font-medium text-ink-soft">
+                    Dá pra marcar quando o dia chegar.
+                  </p>
+                )}
+                {selectedGoals.map((goal) => (
+                  <div
+                    key={goal.id}
+                    className="flex items-center gap-3 rounded-2xl border border-pink-100/80 bg-white px-3 py-3 shadow-soft sm:px-4"
+                  >
+                    <span className="min-w-0 flex-1 break-words font-medium text-ink">{goal.title}</span>
+                    <GoalStatusButtons
+                      status={getStatus(goal.id, selected)}
+                      disabled={selectedIsFuture}
+                      onChange={(status) => setStatus(goal.id, selected, status)}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </section>
+        )}
       </div>
     </div>
   );

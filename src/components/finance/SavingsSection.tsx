@@ -142,7 +142,7 @@ export function SavingsSection({
 
       <ConfirmDialog
         open={confirmingDelete}
-        itemLabel={`guardar ${formatCents(amountCents)}`}
+        itemLabel={`meta de guardar ${formatCents(amountCents)}`}
         onConfirm={() => {
           setConfirmingDelete(false);
           startTransition(() => {

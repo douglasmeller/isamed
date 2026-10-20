@@ -11,10 +11,22 @@ export function addDays(date: Date, days: number): Date {
   return copy;
 }
 
+const APP_TIME_ZONE = "America/Sao_Paulo";
+const todayFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: APP_TIME_ZONE,
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+});
+
+// "Hoje" sempre no fuso do Brasil. O servidor (Vercel) roda em UTC, entao
+// new Date() la ja vira o dia seguinte a partir das 21h daqui.
+export function todayISO(): string {
+  return todayFormatter.format(new Date());
+}
+
 export function startOfToday(): Date {
-  const now = new Date();
-  now.setHours(0, 0, 0, 0);
-  return now;
+  return new Date(`${todayISO()}T00:00:00`);
 }
 
 export function formatWeekday(date: Date): string {

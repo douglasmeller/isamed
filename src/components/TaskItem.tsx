@@ -14,7 +14,7 @@ import {
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
-import { formatShortDate, toISODate } from "@/lib/dates";
+import { formatShortDate, todayISO } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
 import { linkedItemsFor, linkTargetHref } from "@/lib/links";
 import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
@@ -140,7 +140,7 @@ export function TaskItem({
         ]
       : undefined;
   const linked = allLinks ? linkedItemsFor(self, allLinks) : [];
-  const today = toISODate(new Date());
+  const today = todayISO();
 
   // Tarefa que veio de "Em aberto" carrega o contorno azul pra sempre,
   // mesmo depois de concluida -- por isso a cor da borda fica de fora do

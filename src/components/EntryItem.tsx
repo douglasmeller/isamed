@@ -8,7 +8,7 @@ import { deleteEntry, moveEntry, updateEntry } from "@/app/actions/entries";
 import { ConfirmDialog } from "@/components/ConfirmDialog";
 import { DatePicker } from "@/components/DatePicker";
 import { LinkPicker } from "@/components/LinkPicker";
-import { formatDayMonth, formatShortDate, formatWeekday, toISODate } from "@/lib/dates";
+import { formatDayMonth, formatShortDate, formatWeekday, todayISO } from "@/lib/dates";
 import { isSubmitEnter } from "@/lib/keyboard";
 import { linkedItemsFor, linkTargetHref } from "@/lib/links";
 import { useAutoGrowTextarea } from "@/lib/useAutoGrow";
@@ -117,7 +117,7 @@ export function EntryItem({
         ]
       : undefined;
   const linked = allLinks ? linkedItemsFor(self, allLinks) : [];
-  const today = toISODate(new Date());
+  const today = todayISO();
 
   return (
     <div

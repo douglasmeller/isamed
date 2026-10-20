@@ -7,7 +7,7 @@ import { ExpensesSection } from "@/components/finance/ExpensesSection";
 import { IncomesSection } from "@/components/finance/IncomesSection";
 import { SavingsSection } from "@/components/finance/SavingsSection";
 import { cn } from "@/lib/cn";
-import { formatMonthYear, toISODate } from "@/lib/dates";
+import { formatMonthYear, todayISO } from "@/lib/dates";
 import {
   addMonths,
   billCycleForDueMonth,
@@ -32,8 +32,8 @@ const navButton =
 
 export default async function FinanceiroPage({ searchParams }: PageProps<"/financeiro">) {
   const params = await searchParams;
-  const todayISO = toISODate(new Date());
-  const currentMonth = monthOf(todayISO);
+  const today = todayISO();
+  const currentMonth = monthOf(today);
   const month =
     typeof params.month === "string" && isValidMonth(params.month) ? params.month : currentMonth;
   const monthEnd = lastDayOf(month);
@@ -101,7 +101,7 @@ export default async function FinanceiroPage({ searchParams }: PageProps<"/finan
     billPaid = Boolean(data?.paid);
   }
 
-  const defaultDate = month === currentMonth ? todayISO : firstDayOf(month);
+  const defaultDate = month === currentMonth ? today : firstDayOf(month);
 
   const summary = [
     { label: "Renda", value: incomesTotal },
