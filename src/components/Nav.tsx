@@ -3,19 +3,25 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CalendarDays, FileQuestion, Inbox, ListChecks, NotebookPen } from "lucide-react";
+import { BookOpen, House, Settings } from "lucide-react";
 import { cn } from "@/lib/cn";
+import { ESTUDOS_TABS } from "@/lib/navigation";
 
+// Cada item do menu cobre uma secao; as subtelas ficam nas abas do topo.
 const items = [
-  { href: "/calendario", label: "Calendário", icon: CalendarDays },
-  { href: "/tarefas-estudos", label: "Tarefas/Estudos", icon: ListChecks },
-  { href: "/provas", label: "Provas", icon: FileQuestion },
-  { href: "/anotacoes", label: "Anotações", icon: NotebookPen },
-  { href: "/em-aberto", label: "Em aberto", icon: Inbox },
+  { href: "/calendario", label: "Home", icon: House, paths: ["/calendario"] },
+  {
+    href: ESTUDOS_TABS[0].href,
+    label: "Estudos",
+    icon: BookOpen,
+    paths: ESTUDOS_TABS.map((t) => t.href),
+  },
+  { href: "/configuracoes", label: "Configurações", icon: Settings, paths: ["/configuracoes"] },
 ];
 
 export function Nav() {
   const pathname = usePathname();
+  const isActive = (paths: string[]) => paths.includes(pathname);
 
   return (
     <>
@@ -23,7 +29,7 @@ export function Nav() {
       <nav className="fixed inset-x-0 bottom-0 z-20 flex justify-center border-t border-pink-200/50 bg-white/90 px-2 pb-[env(safe-area-inset-bottom)] shadow-bar backdrop-blur md:hidden">
         <div className="flex w-full max-w-md items-stretch justify-around py-2">
           {items.map((item) => {
-            const active = pathname === item.href;
+            const active = isActive(item.paths);
             const Icon = item.icon;
             return (
               <Link
@@ -63,7 +69,7 @@ export function Nav() {
           className="mb-6 ml-2 h-8 w-auto self-start"
         />
         {items.map((item) => {
-          const active = pathname === item.href;
+          const active = isActive(item.paths);
           const Icon = item.icon;
           return (
             <Link

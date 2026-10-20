@@ -90,6 +90,14 @@ button:not(:disabled) {
   cursor: pointer;
 }
 
+/* Faixas que rolam de lado (ex: abas no celular) sem barra de rolagem visivel. */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Scrollbar styling to keep the soft aesthetic */
 ::-webkit-scrollbar {
   width: 10px;
