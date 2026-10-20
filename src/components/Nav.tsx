@@ -31,11 +31,13 @@ export function Nav() {
 
   return (
     <>
-      {/* Mobile: bottom tab bar. O "after" estende o fundo branco por baixo
-          da barra: no iPhone, quando o Safari recolhe a barra dele durante o
-          scroll, abre um vao entre a nossa barra e o fim da tela -- assim o
-          vao fica branco em vez de mostrar o conteudo passando por baixo. */}
-      <nav className="fixed inset-x-0 bottom-0 z-20 flex justify-center border-t border-pink-200/50 bg-white/90 px-2 pb-[env(safe-area-inset-bottom)] shadow-bar backdrop-blur after:pointer-events-none after:absolute after:inset-x-0 after:top-full after:h-[50vh] after:bg-white after:content-[''] md:hidden">
+      {/* Mobile: bottom tab bar. No iPhone, ao rolar, o iOS pode abrir um vao
+          entre a barra fixa e o fim da tela, mostrando o conteudo passando por
+          baixo. A propria caixa da barra desce 50vh alem da tela (os icones
+          ficam no topo dela), entao qualquer vao mostra a barra, branca.
+          Fundo solido e sem backdrop-blur: no Safari o blur recorta o que
+          passa da caixa, e a extensao some. */}
+      <nav className="fixed inset-x-0 -bottom-[50vh] z-20 flex items-start justify-center border-t border-pink-200/50 bg-white px-2 pb-[calc(50vh+env(safe-area-inset-bottom))] shadow-bar md:hidden">
         <div className="flex w-full max-w-md items-stretch justify-around py-2">
           {items.map((item) => {
             const active = isActive(item.paths);
