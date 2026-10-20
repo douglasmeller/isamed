@@ -83,8 +83,9 @@ export function MonthCalendar({
   const selectedNotes = selectedEntries.filter((e) => e.kind === "note");
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="rounded-2xl border border-pink-100/80 bg-white p-4 shadow-lift sm:p-6">
+    // Tela larga: calendario fixo a esquerda, painel do dia rolando a direita.
+    <div className="flex flex-col gap-6 xl:grid xl:grid-cols-2 xl:items-start xl:gap-10">
+      <div className="rounded-2xl border border-pink-100/80 bg-white p-4 shadow-lift sm:p-6 xl:sticky xl:top-6">
         <div className="mb-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-ink">{formatMonthYear(monthDate)}</h2>
           <div className="flex gap-1">

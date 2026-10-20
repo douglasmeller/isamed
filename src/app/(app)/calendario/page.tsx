@@ -41,7 +41,7 @@ export default async function CalendarioPage({ searchParams }: PageProps<"/calen
   ]);
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 pt-2">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 pt-2 xl:max-w-6xl">
       <header>
         <h1 className="text-2xl font-semibold text-ink">Calendário</h1>
         <p className="text-sm text-ink-soft">Organize seus dias, provas e anotações num só lugar.</p>
